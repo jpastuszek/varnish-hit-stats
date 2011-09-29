@@ -17,8 +17,8 @@ Jeweler::Tasks.new do |gem|
   gem.name = "varnish-hit-stats"
   gem.homepage = "http://github.com/jpastuszek/varnish-hit-stats"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = "Tools for reporing Varnish stats"
+  gem.description = "Parsers and stat tools to analize Varnish ncsa logs"
   gem.email = "jpastuszek@gmail.com"
   gem.authors = ["Jakub Pastuszek"]
   # dependencies defined in Gemfile
