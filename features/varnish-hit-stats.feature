@@ -8,6 +8,12 @@ Feature: Hit rate stat generation
     When I run varnish-hit-stats script on that log file
 	Then it will print the following output
 	"""
-	dfasf
+	class, pass, hit, miss, total, hit/total
+	Cache-Brochure, 0, 2, 5, 7, 0.285714
+	Cache-Default, 0, 8, 45, 53, 0.150943
+	Cache-Search, 0, 0, 4, 4, 0.000000
+	Request-List, 1, 0, 0, 1, 0.000000
+	URL-List, 20, 0, 0, 20, 0.000000
+
 	"""
 
