@@ -1,9 +1,13 @@
-Feature: something something
-  In order to something something
-  A user something something
-  something something something
+Feature: Hit rate stat generation
+  In order to gather knowledge on Varnish hit rates
+  As a Varnish admin
+  I want to know hit rates for each page class
 
-  Scenario: something something
-    Given inspiration
-    When I create a sweet new gem
-    Then everyone should see how awesome I am
+  Scenario: Getting hit rates from Varnish ncsa log file
+    Given Varnish ncsa log file test1.log
+    When I run varnish-hit-stats script on that log file
+	Then it will print the following output
+	"""
+	dfasf
+	"""
+

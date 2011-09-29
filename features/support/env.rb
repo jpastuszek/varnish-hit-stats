@@ -11,3 +11,16 @@ $LOAD_PATH.unshift(File.dirname(__FILE__) + '/../../lib')
 require 'varnish-hit-stats'
 
 require 'rspec/expectations'
+
+def test_log(file)
+	Pathname.new(__FILE__).dirname + '../test_logs' + file
+end
+
+def script(file)
+	Pathname.new(__FILE__).dirname + '../../bin' + file
+end
+
+def script_output(file, *args)
+	`#{script(file)} #{args.join(' ')}`
+end
+
