@@ -34,7 +34,7 @@ class Stat
 end
 
 File.open(ARGV[0]).each_line do |line|
-	x, handling, current_status, initial_status = *line.match(/^([^ ]*) ([^ ]*) ([^ ]*)/)
+	x, handling, current_status, initial_status, hits, ttl, age = *line.match(/([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*)$/)
 	handling = handling.to_sym
 	#puts handling, current_status, initial_status
 	stats[initial_status] ||= Stat.new
