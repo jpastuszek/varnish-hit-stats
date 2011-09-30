@@ -1,49 +1,15 @@
 #!/usr/bin/ruby
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+require 'varnish-hit-stats'
 
-stats = {}
-
-class Stat
-	def initialize
-		@pass = 0
-		@hit = 0
-		@miss = 0
-	end
-
-
-	def pass
-		@pass += 1
-	end
-
-	def hit
-		@hit += 1
-	end
-
-	def miss
-		@miss += 1
-	end
-
-	def get
-		total = @pass + @hit + @miss
-		hit_total_rate = @hit.to_f / total
-		Struct.new(
-			:pass, :hit, :miss, :total, :hit_total_rate
-		).new(
-			@pass, @hit, @miss, total, hit_total_rate
-		)
-	end
-end
+hs = VarnishHitStats.new
 
 File.open(ARGV[0]).each_line do |line|
-	x, handling, current_status, initial_status, hits, ttl, age = *line.match(/([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*)$/)
-	handling = handling.to_sym
-	#puts handling, current_status, initial_status
-	stats[initial_status] ||= Stat.new
-	stats[initial_status].send(handling)
+	hs.process(line)
 end
 
 puts "class, pass, hit, miss, total, hit/total"
-stats.keys.sort.each do |page_class|
-	s = stats[page_class].get
+hs.each do |page_class, s|
 	puts "%s, %i, %i, %i, %i, %f" % [page_class, s.pass, s.hit, s.miss, s.total, s.hit_total_rate]
 end
 
