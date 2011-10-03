@@ -9,10 +9,11 @@ Feature: Hit rate stat generation
 	Then it will print the following output
 	"""
 	class, pass, hit, miss, total, hit/total
-	Cache-Brochure, 0, 2, 2, 4, 0.500000
-	Cache-Default, 0, 17, 20, 37, 0.459459
-	Cache-Search, 0, 1, 2, 3, 0.333333
-	URL-List, 14, 0, 0, 14, 0.000000
+	Cache-Brochure, 0, 3, 3, 6, 0.500000
+	Cache-Default, 0, 18, 19, 37, 0.486486
+	Cache-Search, 0, 3, 4, 7, 0.428571
+	Response-Status, 1, 0, 0, 1, 0.000000
+	URL-List, 19, 0, 0, 19, 0.000000
 
 	"""
 

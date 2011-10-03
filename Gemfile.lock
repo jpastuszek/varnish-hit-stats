@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/jpastuszek/universal-access-log-parser.git
+  revision: f2a4d4a812be0d52f5fed5c7addef4bca452f1c7
+  specs:
+    universal-access-log-parser (0.0.0)
+      ruby-ip
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -27,6 +34,7 @@ GEM
     rspec-expectations (2.3.0)
       diff-lcs (~> 1.1.2)
     rspec-mocks (2.3.0)
+    ruby-ip (0.9.0)
     term-ansicolor (1.0.6)
 
 PLATFORMS
@@ -38,3 +46,4 @@ DEPENDENCIES
   jeweler (~> 1.6.4)
   rcov
   rspec (~> 2.3.0)
+  universal-access-log-parser!

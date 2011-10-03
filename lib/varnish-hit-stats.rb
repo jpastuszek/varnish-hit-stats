@@ -1,3 +1,5 @@
+require 'universal_access_log_parser'
+
 class VarnishHitStats
 	class Stat
 		def initialize
@@ -31,14 +33,25 @@ class VarnishHitStats
 
 	def initialize
 		@stats = {}
+		@parser = UniversalAccessLogParser.new do
+			apache_combined
+			string :handling
+			string :current_status, :nil_on => '-'
+			string :initial_status, :nil_on => '-'
+			integer :cache_hits
+			float :cache_ttl, :nil_on => '-'
+			integer :cache_age
+		end
 	end
 
 	def process(line)
-		x, handling, current_status, initial_status, hits, ttl, age = *line.match(/([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*)$/)
-		handling = handling.to_sym
+		line.strip!
+		data = @parser.parse(line)
+
+		handling = data.handling.to_sym
 		#puts handling, current_status, initial_status
-		@stats[initial_status] ||= Stat.new
-		@stats[initial_status].send(handling)
+		@stats[data.initial_status] ||= Stat.new
+		@stats[data.initial_status].send(data.handling)
 	end
 
 	def each
