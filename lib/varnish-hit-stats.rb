@@ -1,4 +1,4 @@
-require 'universal_access_log_parser'
+require 'universal-access-log-parser'
 
 class VarnishHitStats
 	class Stat

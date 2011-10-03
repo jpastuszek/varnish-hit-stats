@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/jpastuszek/universal-access-log-parser.git
-  revision: f2a4d4a812be0d52f5fed5c7addef4bca452f1c7
+  revision: 5efcde47714050c914ce2c9e31e640ba0d5474ed
   specs:
     universal-access-log-parser (0.0.0)
       ruby-ip
