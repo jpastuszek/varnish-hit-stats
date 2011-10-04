@@ -3,9 +3,5 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'varnish-hit-stats'
 
 hs = VarnishHitStats.new(ARGV[0])
-
-puts "class, pass, hit, miss, total, hit/total"
-hs.each do |page_class, s|
-	puts "%s, %i, %i, %i, %i, %f" % [page_class, s.pass, s.hit, s.miss, s.total, s.hit_to_total_ratio]
-end
+puts hs.to_csv
 
