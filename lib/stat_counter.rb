@@ -13,7 +13,7 @@ class StatCounter
 	def method_missing(name, *args)
 		super(name, *args) unless args.empty?
 		case name.to_s
-		when /^([^_]*)_([^_]*)_ratio$/
+		when /^(.*?)_to_(.*?)_ratio$/
 			send($1.to_sym).to_f / send($2.to_sym)
 		when 'total'
 			@stats.values.inject(0){|sum, value| sum + value}

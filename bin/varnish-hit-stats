@@ -6,6 +6,6 @@ hs = VarnishHitStats.new(ARGV[0])
 
 puts "class, pass, hit, miss, total, hit/total"
 hs.each do |page_class, s|
-	puts "%s, %i, %i, %i, %i, %f" % [page_class, s.pass, s.hit, s.miss, s.total, s.hit_total_ratio]
+	puts "%s, %i, %i, %i, %i, %f" % [page_class, s.pass, s.hit, s.miss, s.total, s.hit_to_total_ratio]
 end
 
