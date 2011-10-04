@@ -1,5 +1,9 @@
 = varnish-hit-stats
 
+== Installing
+
+ sudo easy_install Pygments
+
 Description goes here.
 
 == Contributing to varnish-hit-stats

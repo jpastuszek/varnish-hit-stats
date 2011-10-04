@@ -1,6 +1,10 @@
 source "http://rubygems.org"
 
 gem "universal-access-log-parser", ">= 0", :git => 'git://github.com/jpastuszek/universal-access-log-parser.git'
+gem "jekyll", "~> 0.11.0"
+gem "rdiscount", "~> 1.6.8"
+gem "compass", "~> 0.11.5"
+gem "posix-spawn", "~> 0.3.0"
 
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
