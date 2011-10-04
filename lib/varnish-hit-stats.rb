@@ -31,27 +31,24 @@ class VarnishHitStats
 		end
 	end
 
-	def initialize
+	def initialize(file)
 		@stats = {}
 		@parser = UniversalAccessLogParser.new do
 			apache_combined
-			string :handling
+			string :handling, :process => lambda{|s| s.to_sym}
 			string :current_status, :nil_on => '-'
 			string :initial_status, :nil_on => '-'
 			integer :cache_hits
 			float :cache_ttl, :nil_on => '-'
 			integer :cache_age
 		end
-	end
 
-	def process(line)
-		line.strip!
-		data = @parser.parse(line)
-
-		handling = data.handling.to_sym
-		#puts handling, current_status, initial_status
-		@stats[data.initial_status] ||= Stat.new
-		@stats[data.initial_status].send(data.handling)
+		@parser.parse_file(file) do |iter|
+			iter.each do |entry|
+				@stats[entry.initial_status] ||= Stat.new
+				@stats[entry.initial_status].send(entry.handling)
+			end
+		end
 	end
 
 	def each

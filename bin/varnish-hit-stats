@@ -2,11 +2,7 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'varnish-hit-stats'
 
-hs = VarnishHitStats.new
-
-File.open(ARGV[0]).each_line do |line|
-	hs.process(line)
-end
+hs = VarnishHitStats.new(ARGV[0])
 
 puts "class, pass, hit, miss, total, hit/total"
 hs.each do |page_class, s|
