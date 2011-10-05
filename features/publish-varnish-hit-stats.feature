@@ -4,8 +4,10 @@ Feature: Publishing varnish hit stats to jekyll website
   I want to process varnish log into published jekyll post
 
   Scenario: Processing yesterdays varnish log file into published jekyll post
-    Given content of test1.log file
-    When I run publish-varnish-hit-stats script with that file content piped in STDIN
+		Given jekyll test directory
+		Given jekyll directory as script argument
+    Given content of test1.log file piped in STDIN
+    When I run publish-varnish-hit-stats script
 		Then jekyll post Varnish Hit Stats in yesterdays directory will contain
 		"""
 		<!DOCTYPE html>

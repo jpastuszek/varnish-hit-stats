@@ -4,8 +4,8 @@ Feature: Generating post form varnish hit stat CSV
   I want to process hit stat CSV into jekyll post entry
 
   Scenario: Processing stats from STDIN CSV format into page STDOUT output
-    Given content of hit_stats1.csv file
-    When I run hit-stats-to-post script with that file content piped in STDIN
+    Given content of hit_stats1.csv file piped in STDIN
+    When I run hit-stats-to-post script
 		Then it will print the following output
 		"""
 		---

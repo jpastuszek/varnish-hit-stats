@@ -4,8 +4,8 @@ Feature: Hit rate stat generation
   I want to know hit rates for each page class
 
   Scenario: Getting hit rates from Varnish ncsa log file
-    Given content of test1.log file
-    When I run varnish-hit-stats script with that file content piped in STDIN
+    Given content of test1.log file piped in STDIN
+    When I run varnish-hit-stats script
 		Then it will print the following output
 		"""
 		class, pass, hit, miss, total, hit/total
