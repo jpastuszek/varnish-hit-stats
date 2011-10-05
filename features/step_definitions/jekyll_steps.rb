@@ -4,7 +4,15 @@ end
 
 Given /jekyll directory as script argument/ do
 	@script_args ||= []
-	@script_args << @jekyll_dir
+	@script_args << @jekyll_dir.to_s
+end
+
+Given /jekyll (.*) directory is empty/ do |dir|
+	fail 'jekyll dir not set' unless @jekyll_dir
+	dir = @jekyll_dir + dir
+	Pathname.glob(dir + '*').each do |entry|
+		entry.rmtree
+	end
 end
 
 Then /jekyll post (.*) in ([^ ]*) directory will include/ do |post_name, time_spec, output|
