@@ -5,6 +5,7 @@ gem "jekyll", "~> 0.11.0"
 gem "rdiscount", "~> 1.6.8"
 gem "compass", "~> 0.11.5"
 gem "posix-spawn", "~> 0.3.0"
+gem "RedCloth", "~> 4.2.2"
 
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
