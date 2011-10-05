@@ -2,6 +2,19 @@
 require 'csv'
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-puts STDIN.read
+puts '---'
+puts 'layout: post'
+puts 'title: Hit Stats'
+puts 'tags: [varnish hit stats]'
+puts '---'
 
+csv = CSV.parse(STDIN.read) 
+
+headers = csv.shift
+
+puts '|_. ' + headers.map{|h| h.strip}.join(' |_. ') + ' |'
+
+csv.each do |row|
+	puts '| ' + row.map{|h| h.strip}.join(' | ') + ' |'
+end
 
