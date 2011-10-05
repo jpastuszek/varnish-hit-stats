@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 puts '---'
 puts 'layout: post'
-puts 'title: Hit Stats'
+puts 'title: Varnish hit stats'
 puts 'tags: [varnish hit stats]'
 puts '---'
 

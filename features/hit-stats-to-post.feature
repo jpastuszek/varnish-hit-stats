@@ -10,7 +10,7 @@ Feature: Generating post form varnish hit stat CSV
 		"""
 		---
 		layout: post
-		title: Hit Stats
+		title: Varnish hit stats
 		tags: [varnish hit stats]
 		---
 		|_. class |_. pass |_. hit |_. miss |_. total |_. hit/total |

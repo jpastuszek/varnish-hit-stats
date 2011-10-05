@@ -7,10 +7,13 @@ markdown: rdiscount
 
 # configuration required for some pages
 
-domain: blog.example.com
-title: My Blog Title
-author: Me
-email: me@example.com
+#domain: localhost:4000
+#protocol: http
+domain: whatclinic.com:444
+protocol: https
+title: Cache server reports
+author: Jakub Pastuszek
+email: jpastuszek@gmail.com
 
 # configuration for ehancements, uncomment to enable
 

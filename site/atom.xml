@@ -5,10 +5,10 @@ layout: nil
 <feed xmlns="http://www.w3.org/2005/Atom">
 
  <title>{{ site.title }}</title>
- <link href="http://{{ site.domain }}/atom.xml" rel="self"/>
- <link href="http://{{ site.domain }}/"/>
+ <link href="{{ site.protocol }}://{{ site.domain }}/atom.xml" rel="self"/>
+ <link href="{{ site.protocol }}://{{ site.domain }}/"/>
  <updated>{{ site.time | date_to_xmlschema }}</updated>
- <id>http://{{ site.domain }}/</id>
+ <id>{{ site.protocol }}://{{ site.domain }}/</id>
  <author>
    <name>{{ site.author }}</name>
    <email>{{ site.email }}</email>
@@ -17,9 +17,9 @@ layout: nil
  {% for post in site.posts %}
  <entry>
    <title>{{ post.title }}</title>
-   <link href="http://{{ site.domain }}{{ post.url }}"/>
+   <link href="{{ site.protocol }}://{{ site.domain }}{{ post.url }}"/>
    <updated>{{ post.date | date_to_xmlschema }}</updated>
-   <id>http://{{ site.domain }}{{ post.id }}</id>
+   <id>{{ site.protocol }}://{{ site.domain }}{{ post.id }}</id>
    <content type="html">{{ post.content | xml_escape }}</content>
  </entry>
  {% endfor %}

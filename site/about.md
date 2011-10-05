@@ -3,4 +3,5 @@ layout: default
 title: About
 ---
 
-All about me and my blog...
+This site contains day-by-day reports about this cache server.
+
