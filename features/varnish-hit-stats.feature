@@ -14,6 +14,7 @@ Feature: Hit rate stat generation
 		Cache-Search, 0, 3, 4, 7, 0.428571
 		Response-Status, 1, 0, 0, 1, 0.000000
 		URL-List, 19, 0, 0, 19, 0.000000
+		unset, 1, 0, 0, 1, 0.000000
 
 		"""
 

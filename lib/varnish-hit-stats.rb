@@ -15,8 +15,9 @@ class VarnishHitStats
 		end
 
 		@parser.parse_io(io).each do |entry|
-			@stats[entry.initial_status] ||= StatCounter.new
-			@stats[entry.initial_status].up(entry.handling)
+			page_class = (entry.initial_status or entry.current_status or 'unset')
+			@stats[page_class] ||= StatCounter.new
+			@stats[page_class].up(entry.handling)
 		end
 	end
 
