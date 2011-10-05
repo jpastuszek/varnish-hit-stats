@@ -5,7 +5,7 @@ Feature: Hit rate stat generation
 
   Scenario: Getting hit rates from Varnish ncsa log file
     Given content of test1.log file
-    When I run varnish-hit-stats script with file path given as first argument
+    When I run varnish-hit-stats script with that file content piped in STDIN
 		Then it will print the following output
 		"""
 		class, pass, hit, miss, total, hit/total

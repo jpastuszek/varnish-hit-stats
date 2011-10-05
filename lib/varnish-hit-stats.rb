@@ -2,7 +2,7 @@ require 'universal-access-log-parser'
 require 'stat_counter'
 
 class VarnishHitStats
-	def initialize(file)
+	def initialize(io)
 		@stats = {}
 		@parser = UniversalAccessLogParser.new do
 			apache_combined
@@ -14,11 +14,9 @@ class VarnishHitStats
 			integer :cache_age
 		end
 
-		@parser.parse_file(file) do |iter|
-			iter.each do |entry|
-				@stats[entry.initial_status] ||= StatCounter.new
-				@stats[entry.initial_status].up(entry.handling)
-			end
+		@parser.parse_io(io).each do |entry|
+			@stats[entry.initial_status] ||= StatCounter.new
+			@stats[entry.initial_status].up(entry.handling)
 		end
 	end
 

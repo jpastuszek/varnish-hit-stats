@@ -6,11 +6,11 @@
 
 == Usage
 
-*varnish-hit-stat* generates hit statistic for Varnish in CSV format to +STDOUT+.
+*varnish-hit-stat* generates hit statistic for Varnish in CSV format to +STDOUT+ from varnish log file piped in +STDIN+.
 
 *hit-stat-to-post* generates jekyll post in form stats piped in +STDIN+.
 
-*publish-varnish-hit-stats* *<_site dir>* generates final web site with varnish stats for yesterday.
+*publish-varnish-hit-stats* generates final web site with varnish stats for yesterday.
 
 == Contributing to varnish-hit-stats
  
