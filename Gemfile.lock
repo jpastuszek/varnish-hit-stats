@@ -1,8 +1,8 @@
 GIT
   remote: git://github.com/jpastuszek/universal-access-log-parser.git
-  revision: 5efcde47714050c914ce2c9e31e640ba0d5474ed
+  revision: c0e9beb4e9c93d5b38a9e0d98b0a3857a7fa6fa8
   specs:
-    universal-access-log-parser (0.0.0)
+    universal-access-log-parser (0.1.0)
       ruby-ip
 
 GEM
@@ -84,4 +84,4 @@ DEPENDENCIES
   rcov
   rdiscount (~> 1.6.8)
   rspec (~> 2.6.0)
-  universal-access-log-parser!
+  universal-access-log-parser (~> 0.1.0)!
