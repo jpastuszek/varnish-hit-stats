@@ -1,4 +1,6 @@
 require 'bundler'
+require 'pathname'
+
 begin
   Bundler.setup(:default, :development)
 rescue Bundler::BundlerError => e
@@ -12,8 +14,8 @@ require 'varnish-hit-stats'
 
 require 'rspec/expectations'
 
-def test_log(file)
-	Pathname.new(__FILE__).dirname + '../test_logs' + file
+def test_files(file)
+	Pathname.new(__FILE__).dirname + '../test_files' + file
 end
 
 def script(file)
@@ -22,5 +24,9 @@ end
 
 def script_output(file, *args)
 	`#{script(file)} #{args.join(' ')}`
+end
+
+def script_output_from_input(in_file, file, *args)
+	`cat #{in_file} | #{script(file)} #{args.join(' ')}`
 end
 
