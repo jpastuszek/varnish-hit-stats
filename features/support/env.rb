@@ -23,10 +23,14 @@ def script(file)
 end
 
 def script_output(file, *args)
-	`#{script(file)} #{args.join(' ')}`
+	out = `#{script(file)} #{args.join(' ')}`
+	raise 'failed to execute script' unless $? == 0
+	out
 end
 
 def script_output_from_input(in_file, file, *args)
-	`cat #{in_file} | #{script(file)} #{args.join(' ')}`
+	out = `cat #{in_file} | #{script(file)} #{args.join(' ')}`
+	raise 'failed to execute script' unless $? == 0
+	out
 end
 
