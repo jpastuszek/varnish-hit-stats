@@ -1,3 +1,11 @@
+Given /([^ ]*) env var set to (.*)/ do |name, val|
+	ENV[name] = val
+end
+
+Given /gem bin directory in PATH/ do
+	ENV['PATH'] = ENV['PATH'] + ':' + (Pathname.new(__FILE__).dirname + '../../bin').to_s
+end
+
 Given /content of ([^ ]*) file piped in STDIN/ do |test_file|
 	@script_stdin_input_file = test_files(test_file)
 end

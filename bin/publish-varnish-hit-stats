@@ -1,6 +1,36 @@
 #!/usr/bin/ruby
-require 'csv'
+require 'pathname'
+require 'active_support/core_ext'
+
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-p ARGV
+jekyll_dir = ARGV.shift
+
+puts "Processing varnish log to hit stats post..."
+post = `cat - | varnish-hit-stats | hit-stats-to-post`
+raise 'failed to execute varnish-hit-stats or hit-stats-to-post, are they available in PATH?' unless $?.success?
+
+yesterday = Time.now.yesterday.strftime('%Y-%m-%d')
+out_file = Pathname.new(jekyll_dir) + '_posts' + (yesterday + '-varnish-hit-stats.textile')
+
+puts "Writting output to: #{out_file}"
+File.open(out_file, 'w') do |file|
+	file.write(post)
+end
+
+puts "Building site in #{jekyll_dir}:"
+Dir.chdir(jekyll_dir)
+
+def rake(cmd)
+	c = []
+	c << 'bundle exec' if ENV['USE_BUNDLER_EXEC']
+	c << 'rake'
+	c << cmd + ' 2>&1'
+	cmd = c.join(' ')
+	puts "# #{cmd}"
+	system(cmd)
+	raise 'failed to execute rake command' unless $?.success?
+end
+
+rake 'build'
 

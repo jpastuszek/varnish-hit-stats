@@ -7,14 +7,14 @@ Given /jekyll directory as script argument/ do
 	@script_args << @jekyll_dir
 end
 
-Then /jekyll post (.*) in ([^ ]*) directory will contain/ do |post_name, time_spec, output|
+Then /jekyll post (.*) in ([^ ]*) directory will include/ do |post_name, time_spec, output|
 	time = Time.now.send(time_spec.singularize)
 	file_name = post_name.downcase.tr(' ', '-')
 	uri = time.strftime('%Y/%m/%d') + '/' + file_name + '.html'
 
-	p @out
+	puts @out
 	File.open(@jekyll_dir + '_site' + uri) do |file|
-		output.should == file.read
+		file.read.should include(output)
 	end
 end
 
