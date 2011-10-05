@@ -10,7 +10,7 @@
 
 *hit-stat-to-post* generates jekyll post in form stats piped in +STDIN+.
 
-*publish-varnish-hit-stats <_site dir>* generates final web site with varnish stats for yesterday.
+*publish-varnish-hit-stats* *<_site dir>* generates final web site with varnish stats for yesterday.
 
 == Contributing to varnish-hit-stats
  
