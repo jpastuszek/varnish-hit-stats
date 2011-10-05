@@ -6,6 +6,8 @@ gem "rdiscount", "~> 1.6.8"
 gem "compass", "~> 0.11.5"
 gem "posix-spawn", "~> 0.3.0"
 gem "RedCloth", "~> 4.2.2"
+gem "i18n", ">= 0.5.0"
+gem "activesupport", "~> 3.0.0"
 
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.

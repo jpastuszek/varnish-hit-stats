@@ -1,5 +1,7 @@
 require 'bundler'
 require 'pathname'
+require 'i18n'
+require 'active_support/core_ext'
 
 begin
   Bundler.setup(:default, :development)
