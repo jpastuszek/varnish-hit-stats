@@ -3,14 +3,28 @@
 == Installing
 
  sudo easy_install Pygments
+ sudo pacman -S rsync
 
 == Usage
 
-*varnish-hit-stat* generates hit statistic for Varnish in CSV format to +STDOUT+ from varnish log file piped in +STDIN+.
+*vhs-init* copies empty jekyll site to given directory keeping _posts and _config.yml untouched
+*vhs-process* generates stats in yml output from input log file
+*vhs-generate-posts* generates post files to given jekyll directory from input yml data
+*vhs-publish* publishes posts from given jkyll directory to given site directory
 
-*hit-stat-to-post* generates jekyll post in form stats piped in +STDIN+.
+Example:
 
-*publish-varnish-hit-stats* generates final web site with varnish stats for yesterday.
+	# initalize jekyll site
+	vhs-init /var/lib/vhs/jekyll
+	
+	# generate posts
+    cat /var/log/varnish/varnishncsa.log.1 | vhs-process > /var/lib/vhs/data/`date +%Y-%m-%d --date yesterday`.yml
+    cat /var/lib/vhs/data/`date +%Y-%m-%d --date yesterday`.yml | vhs-generates-posts /var/lib/vhs/jekyll
+	# or
+    cat /var/log/varnish/varnishncsa.log.1 | vhs-process | vhs-generates-posts /var/lib/vhs/jekyll
+
+	# publish
+    vhs-publish /var/lib/vhs/jekyll /srv/http/stats
 
 == Contributing to varnish-hit-stats
  
