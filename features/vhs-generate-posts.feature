@@ -10,7 +10,6 @@ Feature: Generating Jkyll posts from YAML data
 		Given source _posts directory
 		And _posts directory is empty
 
-	@test
 	Scenario: Generating Hit statistics post with vhs-generate-posts
 		Given source directory as script argument
 		And content of test1.yml file piped in STDIN
