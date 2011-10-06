@@ -1,7 +1,0 @@
-#!/usr/bin/ruby
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-require 'varnish-hit-stats'
-
-hs = VarnishHitStats.new(STDIN)
-puts hs.to_csv
-

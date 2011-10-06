@@ -11,9 +11,8 @@ rescue Bundler::BundlerError => e
 end
 
 $LOAD_PATH.unshift(File.dirname(__FILE__) + '/../../lib')
-require 'varnish-hit-stats'
-
 require 'rspec/expectations'
+require 'yaml'
 
 def gem_dir
 	Pathname.new(__FILE__).dirname + '..' + '..'
@@ -27,7 +26,7 @@ def tmp_test_dir
 	features_dir + 'tmp'
 end
 
-def test_files(file)
+def test_file(file)
 	features_dir + 'test_files' + file
 end
 
