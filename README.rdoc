@@ -22,10 +22,10 @@ Example:
 	
 	# generate posts
     cat /var/log/varnish/varnishncsa.log.1 | vhs-process > /var/lib/vhs/data/`date +%Y-%m-%d --date yesterday`.yml
-    cat /var/lib/vhs/data/`date +%Y-%m-%d --date yesterday`.yml | vhs-generates-posts /var/lib/vhs/jekyll
+    cat /var/lib/vhs/data/`date +%Y-%m-%d --date yesterday`.yml | vhs-generate-posts /var/lib/vhs/jekyll
 
 	# or
-    cat /var/log/varnish/varnishncsa.log.1 | vhs-process | vhs-generates-posts /var/lib/vhs/jekyll
+    cat /var/log/varnish/varnishncsa.log.1 | vhs-process | vhs-generate-posts /var/lib/vhs/jekyll
 
 	# publish
     vhs-publish /var/lib/vhs/jekyll /srv/http/stats
