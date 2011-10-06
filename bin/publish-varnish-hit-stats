@@ -23,7 +23,6 @@ def run(cmd)
 end
 
 puts "Updating source directory"
-source_dir.mkpaht unless source_dir.exist?
 run "rsync -ah --progress --exclude '_posts/*' --exclude '.sass-cache' --exclude 'stylesheets/*' --delete-after '#{jekyll_dir}/' '#{source_dir}'"
 
 puts "Processing varnish log to hit stats post..."
