@@ -15,23 +15,37 @@ require 'varnish-hit-stats'
 
 require 'rspec/expectations'
 
+def gem_dir
+	Pathname.new(__FILE__).dirname + '..' + '..'
+end
+
+def features_dir
+	gem_dir + 'features'
+end
+
+def tmp_test_dir
+	features_dir + 'tmp'
+end
+
 def test_files(file)
-	Pathname.new(__FILE__).dirname + '../test_files' + file
+	features_dir + 'test_files' + file
 end
 
 def script(file)
-	Pathname.new(__FILE__).dirname + '../../bin' + file
+	gem_dir + 'bin' + file
 end
 
 def script_output(file, *args)
-	out = `#{script(file)} #{args.join(' ')}`
-	raise 'failed to execute script' unless $?.success?
+	cmd = "#{script(file)} #{args.join(' ')}"
+	out = `#{cmd} 2>&1`
+	raise "failed to execute script: #{cmd} out: #{out}" unless $?.success?
 	out
 end
 
 def script_output_from_input(in_file, file, *args)
-	out = `cat #{in_file} | #{script(file)} #{args.join(' ')}`
-	raise 'failed to execute script' unless $?.success?
+	cmd = "cat #{in_file} | #{script(file)} #{args.join(' ')}"
+	out = `#{cmd} 2>&1`
+	raise "failed to execute script: #{cmd} out: #{out}" unless $?.success?
 	out
 end
 

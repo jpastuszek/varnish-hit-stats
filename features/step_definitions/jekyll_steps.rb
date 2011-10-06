@@ -1,27 +1,36 @@
-Given /jekyll test directory/ do
-	@jekyll_dir = Pathname.new(__FILE__).dirname + '../../site'
+Given /^source directory$/ do
+	@source_dir = tmp_test_dir + 'source'
 end
 
-Given /jekyll directory as script argument/ do
-	@script_args ||= []
-	@script_args << @jekyll_dir.to_s
+Given /^site directory$/ do
+	@site_dir = tmp_test_dir + 'site'
 end
 
-Given /jekyll (.*) directory is empty/ do |dir|
-	fail 'jekyll dir not set' unless @jekyll_dir
-	dir = @jekyll_dir + dir
+def dir_by_name(dir_name)
+	eval("@#{dir_name}_dir") or fail "undefined dir: #{dir_name}"
+end
+
+Given /([^ ]*) directory is empty/ do |dir_name|
+	dir = dir_by_name(dir_name)
+	dir.mkpath unless dir.exist?
 	Pathname.glob(dir + '*').each do |entry|
+		puts "removing: #{entry}"
 		entry.rmtree
 	end
 end
 
-Then /jekyll post (.*) in ([^ ]*) directory will include/ do |post_name, time_spec, output|
+Given /([^ ]*) directory as script argument/ do |dir_name|
+	@script_args ||= []
+	@script_args << dir_by_name(dir_name).to_s
+end
+
+Then /the ([^ ]*) directory will contain ([^ ]*) post titled (.*) that will include/ do |dir_name, time_spec, post_name, output|
 	time = Time.now.send(time_spec.singularize)
 	file_name = post_name.downcase.tr(' ', '-')
 	uri = time.strftime('%Y/%m/%d') + '/' + file_name + '.html'
 
 	puts @out
-	File.open(@jekyll_dir + '_site' + uri) do |file|
+	File.open(dir_by_name(dir_name) + uri) do |file|
 		file.read.should include(output)
 	end
 end

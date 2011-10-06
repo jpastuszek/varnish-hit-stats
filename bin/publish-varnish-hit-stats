@@ -4,33 +4,43 @@ require 'active_support/core_ext'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
-jekyll_dir = ARGV.shift
+source_dir = Pathname.new(ARGV.shift)
+site_dir = Pathname.new(ARGV.shift)
+jekyll_dir = Pathname.new(__FILE__).dirname + '..' + 'site'
+
+raise "source directory does not exist: #{source_dir}" unless source_dir.exist?
+raise "site directory does not exist: #{site_dir}" unless site_dir.exist?
+raise "jekyll directory does not exist: #{jekyll_dir}" unless jekyll_dir.exist?
+
+def run(cmd)
+	c = []
+	c << 'bundle exec' if ENV['USE_BUNDLER_EXEC']
+	c << cmd + ' 2>&1'
+	cmd = c.join(' ')
+	puts "# #{cmd}"
+	system(cmd)
+	raise "failed to execute command: #{cmd}" unless $?.success?
+end
+
+puts "Updating source directory"
+source_dir.mkpaht unless source_dir.exist?
+run "rsync -ah --progress --exclude '_posts/*' --delete-after '#{jekyll_dir}/' '#{source_dir}'"
 
 puts "Processing varnish log to hit stats post..."
 post = `cat - | varnish-hit-stats | hit-stats-to-post`
 raise 'failed to execute varnish-hit-stats or hit-stats-to-post, are they available in PATH?' unless $?.success?
 
 yesterday = Time.now.yesterday.strftime('%Y-%m-%d')
-out_file = Pathname.new(jekyll_dir) + '_posts' + (yesterday + '-varnish-hit-stats.textile')
+out_file = Pathname.new(source_dir) + '_posts' + (yesterday + '-varnish-hit-stats.textile')
 
 puts "Writting output to: #{out_file}"
 File.open(out_file, 'w') do |file|
 	file.write(post)
 end
 
-puts "Building site in #{jekyll_dir}:"
-Dir.chdir(jekyll_dir)
+puts "Building site from #{source_dir} to #{site_dir}:"
+Dir.chdir(source_dir)
 
-def rake(cmd)
-	c = []
-	c << 'bundle exec' if ENV['USE_BUNDLER_EXEC']
-	c << 'rake'
-	c << cmd + ' 2>&1'
-	cmd = c.join(' ')
-	puts "# #{cmd}"
-	system(cmd)
-	raise 'failed to execute rake command' unless $?.success?
-end
-
-rake 'build'
+run 'compass compile -c config.rb --force'
+run "jekyll '#{site_dir}'"
 
