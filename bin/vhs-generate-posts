@@ -1,5 +1,6 @@
 #!/usr/bin/ruby
 require 'yaml'
+require 'pathname'
 require 'active_support/core_ext'
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
