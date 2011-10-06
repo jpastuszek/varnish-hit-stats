@@ -15,11 +15,12 @@
 Example:
 
 	# initalize jekyll site
-	vhs-init /var/lib/vhs/jekyll
+    vhs-init /var/lib/vhs/jekyll
 	
 	# generate posts
     cat /var/log/varnish/varnishncsa.log.1 | vhs-process > /var/lib/vhs/data/`date +%Y-%m-%d --date yesterday`.yml
     cat /var/lib/vhs/data/`date +%Y-%m-%d --date yesterday`.yml | vhs-generates-posts /var/lib/vhs/jekyll
+
 	# or
     cat /var/log/varnish/varnishncsa.log.1 | vhs-process | vhs-generates-posts /var/lib/vhs/jekyll
 
