@@ -1,3 +1,7 @@
+Given /^jekyll directory$/ do
+	@jekyll_dir = gem_dir + 'site'
+end
+
 Given /^source directory$/ do
 	@source_dir = tmp_test_dir + 'source'
 end

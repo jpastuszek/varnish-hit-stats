@@ -23,7 +23,12 @@ def run(cmd)
 end
 
 puts "Updating source directory"
-run "rsync -ah --progress --exclude '_posts/*' --exclude '.sass-cache' --exclude 'stylesheets/*' --delete-after '#{jekyll_dir}/' '#{source_dir}'"
+run "rsync -ah --progress --exclude '_posts/*' --exclude '.sass-cache' --exclude 'stylesheets/*' --exclude '_config.yml' --delete-after '#{jekyll_dir}/' '#{source_dir}'"
+config = source_dir + '_config.yml'
+unless config.exist?
+	puts "WARNING: Using default configuration"
+	run "cp '#{jekyll_dir + '_config.yml'}' '#{source_dir}'" 
+end
 
 puts "Processing varnish log to hit stats post..."
 post = `cat - | varnish-hit-stats | hit-stats-to-post`

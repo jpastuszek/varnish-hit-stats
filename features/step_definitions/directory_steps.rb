@@ -38,3 +38,26 @@ Then /those files will not exist/ do
 	end
 end
 
+Given /file (.*) in ([^ ]*) directory contain/ do |file, dir_name, content|
+	(dir_by_name(dir_name) + file).open('w') do |io|
+		io.write(content)
+	end
+end
+
+Given /there is no (.*) file in ([^ ]*) directory/ do |file, dir_name|
+	f = (dir_by_name(dir_name) + file)
+	f.rm if f.exist?
+end
+
+Then /file (.*) in ([^ ]*) directory will contain/ do |file, dir_name, content|
+	(dir_by_name(dir_name) + file).open do |io|
+		io.read.should == content
+	end
+end
+
+Then /file (.*) in ([^ ]*) directory will be identical to (.*) file in ([^ ]*) directory/ do |file1, dir_name1, file2, dir_name2|
+	content1 = (dir_by_name(dir_name1) + file1).read
+	content2 = (dir_by_name(dir_name2) + file2).read
+	content1.should == content2
+end
+

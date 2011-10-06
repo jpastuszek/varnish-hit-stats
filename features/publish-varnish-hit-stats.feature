@@ -1,4 +1,4 @@
-Feature: Publishing varnish hit stats to jekyll website
+Feature: Publishing varnish hit stats as jekyll website
   In order to present varnish hit stats on jekyll website
   As a Varnish admin
   I want to process varnish log into published jekyll post
@@ -42,6 +42,37 @@ Feature: Publishing varnish hit stats to jekyll website
 		And content of test1.log file piped in STDIN
 		When I run publish-varnish-hit-stats script
 		Then those files will not exist
+		And the site directory will contain yesterdays post titled Varnish Hit Stats that will include
+		"""
+		0.486486
+		"""
+
+	Scenario: Putting default configuration file
+		Given jekyll directory
+		Given there is no _config.yml file in source directory
+		Given source directory as script argument
+		And site directory as script argument
+		And content of test1.log file piped in STDIN
+		When I run publish-varnish-hit-stats script
+		Then file _config.yml in source directory will be identical to _config.yml file in jekyll directory
+		And the site directory will contain yesterdays post titled Varnish Hit Stats that will include
+		"""
+		0.486486
+		"""
+
+	Scenario: Keeping configuration file unchanged over runs
+		Given file _config.yml in source directory contain
+		"""
+		test
+		"""
+		Given source directory as script argument
+		And site directory as script argument
+		And content of test1.log file piped in STDIN
+		When I run publish-varnish-hit-stats script
+		Then file _config.yml in source directory will contain
+		"""
+		test
+		"""
 		And the site directory will contain yesterdays post titled Varnish Hit Stats that will include
 		"""
 		0.486486
