@@ -17,37 +17,37 @@ Feature: Processing Varnish access log file
 		    :pass: 1
 		    :miss: 0
 		    :total: 1
-		    :hit_to_total: 0
+		    :hit_to_total_ratio: 0.0
 		    :hit: 0
 		  Response-Status: 
 		    :pass: 1
 		    :miss: 0
 		    :total: 1
-		    :hit_to_total: 0
+		    :hit_to_total_ratio: 0.0
 		    :hit: 0
 		  Cache-Default: 
 		    :pass: 0
 		    :miss: 19
 		    :total: 37
-		    :hit_to_total: 0
+		    :hit_to_total_ratio: 0.486486486486487
 		    :hit: 18
 		  Cache-Brochure: 
 		    :pass: 0
 		    :miss: 3
 		    :total: 6
-		    :hit_to_total: 0
+		    :hit_to_total_ratio: 0.5
 		    :hit: 3
 		  URL-List: 
 		    :pass: 19
 		    :miss: 0
 		    :total: 19
-		    :hit_to_total: 0
+		    :hit_to_total_ratio: 0.0
 		    :hit: 0
 		  Cache-Search: 
 		    :pass: 0
 		    :miss: 4
 		    :total: 7
-		    :hit_to_total: 0
+		    :hit_to_total_ratio: 0.428571428571429
 		    :hit: 3
 		"""
 

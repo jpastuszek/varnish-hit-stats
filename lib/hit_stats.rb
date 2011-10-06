@@ -26,7 +26,7 @@ class HitStats
 			h[page_class][:miss] = s.miss
 			h[page_class][:hit] = s.hit
 			h[page_class][:total] = s.total
-			h[page_class][:hit_to_total] = s.hit_to_total
+			h[page_class][:hit_to_total_ratio] = s.hit_to_total_ratio
 		end
 		h
 	end

@@ -1,0 +1,45 @@
+#!/usr/bin/ruby
+require 'yaml'
+require 'active_support/core_ext'
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+
+source_dir = Pathname.new(ARGV.shift)
+$posts_dir = source_dir + '_posts'
+
+raise "source directory does not exist: #{source_dir}" unless source_dir.directory?
+raise "_posts directory does not exist: #{$posts_dir}" unless $posts_dir.directory?
+
+sets = YAML.load(STDIN)
+
+date = Time.now.yesterday.strftime('%Y-%m-%d')
+
+def out_file(date, name)
+	$posts_dir + "#{date}-#{name}.textile"
+end
+
+def write_post(date, name)
+	out_file(date, name).open('w') do |io|
+		yield io
+	end
+end
+
+sets.each_pair do |set, data|
+	case set
+	when :hit
+		write_post(date, 'varnish-hit-stats') do |io|
+			io.puts '---'
+			io.puts 'layout: post'
+			io.puts 'title: Varnish hit stats'
+			io.puts 'tags: [varnish hit stats]'
+			io.puts '---'
+
+			io.puts  "|_. Page Class |_. Pass |_. Hit |_. Miss |_. Total |_. Hit/Total |"
+			data.each_pair do |page_class, stats|
+				io.puts "| %s | %i | %i | %i | %i | %f |" % [page_class, stats[:pass], stats[:hit], stats[:miss], stats[:total], stats[:hit_to_total_ratio]]
+			end
+		end
+	end
+end
+
+
+
