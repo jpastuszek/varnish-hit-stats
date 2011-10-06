@@ -8,8 +8,11 @@
 == Usage
 
 *vhs-init* copies empty jekyll site to given directory keeping _posts and _config.yml untouched
+
 *vhs-process* generates stats in yml output from input log file
+
 *vhs-generate-posts* generates post files to given jekyll directory from input yml data
+
 *vhs-publish* publishes posts from given jkyll directory to given site directory
 
 Example:
