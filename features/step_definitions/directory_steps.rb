@@ -49,6 +49,16 @@ Given /there is no (.*) file in ([^ ]*) directory/ do |file, dir_name|
 	f.rm if f.exist?
 end
 
+Given /([^ ]*) directory contain what ([^ ]*) directory contains/ do |to_dir_name, from_dir_name|
+	from_dir_name = dir_by_name(from_dir_name)
+	to_dir_name = dir_by_name(to_dir_name)
+
+	fail "directory #{from_dir_name} does not exist" unless from_dir_name.directory?
+	fail "directory #{to_dir_name} does not exist" unless to_dir_name.directory?
+
+	system("cp -r '#{Pathname.glob(from_dir_name + '*').join("' '")}' '#{to_dir_name}'")
+end
+
 Then /file (.*) in ([^ ]*) directory will contain/ do |file, dir_name, content|
 	(dir_by_name(dir_name) + file).open do |io|
 		io.read.should == content
@@ -59,5 +69,12 @@ Then /file (.*) in ([^ ]*) directory will be identical to (.*) file in ([^ ]*) d
 	content1 = (dir_by_name(dir_name1) + file1).read
 	content2 = (dir_by_name(dir_name2) + file2).read
 	content1.should == content2
+end
+
+Then /([^ ]*) directory will contain entries/ do |dir_name, files|
+	dir = dir_by_name(dir_name)
+	files.raw.flatten.each do |file|
+		(dir + file).exist?.should == true
+	end
 end
 

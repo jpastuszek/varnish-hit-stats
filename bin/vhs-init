@@ -1,0 +1,28 @@
+#!/usr/bin/ruby
+require 'pathname'
+
+def run(cmd)
+	c = []
+	c << 'bundle exec' if ENV['USE_BUNDLER_EXEC']
+	c << cmd + ' 2>&1'
+	cmd = c.join(' ')
+	puts "# #{cmd}"
+	system(cmd)
+	raise "failed to execute command: #{cmd}" unless $?.success?
+end
+
+source_dir = Pathname.new(ARGV.shift)
+jekyll_dir = Pathname.new(__FILE__).dirname + '..' + 'site'
+
+raise "jekyll directory does not exist: #{jekyll_dir}" unless jekyll_dir.exist?
+
+puts "Updating source directory"
+source_dir.mkpath unless source_dir.exist?
+
+run "rsync -ah --progress --exclude '_posts/*' --exclude '.sass-cache' --exclude 'stylesheets/*' --exclude '_config.yml' --delete-after '#{jekyll_dir}/' '#{source_dir}'"
+config = source_dir + '_config.yml'
+unless config.exist?
+	puts "WARNING: Using default configuration"
+	run "cp '#{jekyll_dir + '_config.yml'}' '#{source_dir}'" 
+end
+
