@@ -1,0 +1,25 @@
+#!/usr/bin/ruby
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+
+source_dir = Pathname.new(ARGV.shift)
+site_dir = Pathname.new(ARGV.shift)
+
+raise "source directory does not exist: #{source_dir}" unless source_dir.exist?
+raise "site directory does not exist: #{site_dir}" unless site_dir.exist?
+
+def run(cmd)
+	c = []
+	c << 'bundle exec' if ENV['USE_BUNDLER_EXEC']
+	c << cmd + ' 2>&1'
+	cmd = c.join(' ')
+	puts "# #{cmd}"
+	system(cmd)
+	raise "failed to execute command: #{cmd}" unless $?.success?
+end
+
+puts "Building site from #{source_dir} to #{site_dir}:"
+Dir.chdir(source_dir)
+
+run 'compass compile -c config.rb --force'
+run "jekyll '#{site_dir}'"
+

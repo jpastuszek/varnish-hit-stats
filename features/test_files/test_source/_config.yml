@@ -1,0 +1,31 @@
+# standard jekyll configuration
+
+permalink: date
+pygments: true
+exclude: ['Rakefile', 'README.md', 'config.rb']
+markdown: rdiscount
+
+baseurl: /stats
+server_port: 1443 
+
+root: http://localhost:1443/stats
+
+# configuration required for some pages
+
+title: Cache server reports
+author: Jakub Pastuszek
+email: jpastuszek@gmail.com
+
+# configuration for ehancements, uncomment to enable
+
+# feedburner:
+#   id: feedburnerid
+
+# google_analytics:
+#   account: UA-XXXXX-X
+
+# github:
+#   username: ghusername
+
+# disqus:
+#   id: disqusid

@@ -14,6 +14,10 @@ Given /^source _posts directory$/ do
 	@_posts_dir = tmp_test_dir + 'source' + '_posts'
 end
 
+Given /^test_source test directory$/ do
+	@test_source_dir = test_files_dir + 'test_source'
+end
+
 Then /the ([^ ]*) directory will contain ([^ ]*) post titled (.*) that will include/ do |dir_name, time_spec, post_name, output|
 	time = Time.now.send(time_spec.singularize)
 	file_name = post_name.downcase.tr(' ', '-')

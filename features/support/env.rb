@@ -26,8 +26,12 @@ def tmp_test_dir
 	features_dir + 'tmp'
 end
 
+def test_files_dir
+	features_dir + 'test_files'
+end
+
 def test_file(file)
-	features_dir + 'test_files' + file
+	test_files_dir + file
 end
 
 def script(file)
