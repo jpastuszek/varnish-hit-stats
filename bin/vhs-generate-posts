@@ -34,10 +34,17 @@ sets.each_pair do |set, data|
 			io.puts 'tags: [varnish hit stats]'
 			io.puts '---'
 
+			totals = {}
+
 			io.puts  "|_. Page Class |_. Pass |_. Hit |_. Miss |_. Total |_. Hit/Total |"
 			data.each_pair do |page_class, stats|
+				stats.keys.each do |stat|
+					totals[stat] ||= 0
+					totals[stat] = totals[stat] + stats[stat]
+				end
 				io.puts "| %s | %i | %i | %i | %i | %f |" % [page_class, stats[:pass], stats[:hit], stats[:miss], stats[:total], stats[:hit_to_total_ratio]]
 			end
+			io.puts "| *total* | *%i* | *%i* | *%i* | *%i* | *%f* |" % [totals[:pass], totals[:hit], totals[:miss], totals[:total], totals[:hit].to_f / totals[:total]]
 		end
 	end
 end
