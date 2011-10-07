@@ -29,7 +29,8 @@ Then /the ([^ ]*) directory will contain ([^ ]*) post titled (.*) that will incl
 end
 
 Then /the ([^ ]*) directory will contain ([^ ]*) post template titled (.*) that will include/ do |dir_name, time_spec, post_name, output|
-	time = Time.now.send(time_spec.singularize)
+	#time = Time.now.send(time_spec.singularize)
+	time = Time.parse(time_spec)
 	file_name = post_name.downcase.tr(' ', '-')
 	uri = time.strftime('%Y-%m-%d') + '-' + file_name + '.textile'
 

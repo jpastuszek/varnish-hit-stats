@@ -13,6 +13,7 @@ end
 $LOAD_PATH.unshift(File.dirname(__FILE__) + '/../../lib')
 require 'rspec/expectations'
 require 'yaml'
+require 'time'
 
 def gem_dir
 	Pathname.new(__FILE__).dirname + '..' + '..'

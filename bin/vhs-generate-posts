@@ -14,6 +14,10 @@ sets = YAML.load(STDIN)
 
 date = Time.now.yesterday.strftime('%Y-%m-%d')
 
+if sets[:info] and first = sets[:info][:first_entry_time] and last = sets[:info][:last_entry_time]
+	date = Time.at(first.to_i / 2 + last.to_i / 2).strftime('%Y-%m-%d')
+end
+
 def out_file(date, name)
 	$posts_dir + "#{date}-#{name}.textile"
 end
