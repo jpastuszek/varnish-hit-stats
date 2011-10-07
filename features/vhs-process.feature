@@ -9,6 +9,9 @@ Feature: Processing Varnish access log file
 		Then it will output yaml that is the same as
 		"""
 		--- 
+		:info:
+		  :first_entry_time: 2011-10-03 16:26:04 Z
+		  :last_entry_time: 2011-10-03 16:30:17 Z
 		:parser: 
 		  :failures: 0
 		  :successes: 71
