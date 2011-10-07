@@ -37,7 +37,8 @@ sets.each_pair do |set, data|
 			totals = {}
 
 			io.puts  "|_. Page Class |_. Pass |_. Hit |_. Miss |_. Total |_. Hit/Total |"
-			data.each_pair do |page_class, stats|
+			data.keys.sort.each do |page_class|
+				stats = data[page_class]
 				stats.keys.each do |stat|
 					totals[stat] ||= 0
 					totals[stat] = totals[stat] + stats[stat]
