@@ -5,17 +5,17 @@
 
 Gem::Specification.new do |s|
   s.name = "varnish-hit-stats"
-  s.version = "0.1.0"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jakub Pastuszek"]
-  s.date = "2011-10-05"
+  s.date = "2011-10-07"
   s.description = "Parsers and stat tools to analize Varnish ncsa logs"
   s.email = "jpastuszek@gmail.com"
-  s.executables = ["varnish-hit-stats", "publish-varnish-hit-stats", "hit-stats-to-post"]
+  s.executables = ["vhs-generate-posts", "vhs-cron", "vhs-process", "vhs-init", "vhs-publish"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
-    "README.rdoc"
+    "README.md"
   ]
   s.files = [
     ".document",
@@ -23,22 +23,47 @@ Gem::Specification.new do |s|
     "Gemfile",
     "Gemfile.lock",
     "LICENSE.txt",
-    "README.rdoc",
+    "README.md",
     "Rakefile",
     "VERSION",
-    "bin/hit-stats-to-post",
-    "bin/publish-varnish-hit-stats",
-    "bin/varnish-hit-stats",
-    "features/hit-stats-to-post.feature",
-    "features/publish-varnish-hit-stats.feature",
+    "bin/vhs-cron",
+    "bin/vhs-generate-posts",
+    "bin/vhs-init",
+    "bin/vhs-process",
+    "bin/vhs-publish",
+    "features/.gitignore",
+    "features/step_definitions/directory_steps.rb",
+    "features/step_definitions/env_variable_steps.rb",
     "features/step_definitions/jekyll_steps.rb",
-    "features/step_definitions/script_and_file_staps.rb",
+    "features/step_definitions/script_steps.rb",
     "features/support/env.rb",
     "features/test_files/hit_stats1.csv",
     "features/test_files/test1.log",
-    "features/varnish-hit-stats.feature",
+    "features/test_files/test1.yml",
+    "features/test_files/test_source/.gitignore",
+    "features/test_files/test_source/README.md",
+    "features/test_files/test_source/Rakefile",
+    "features/test_files/test_source/_config.yml",
+    "features/test_files/test_source/_layouts/default.html",
+    "features/test_files/test_source/_layouts/post.html",
+    "features/test_files/test_source/_sass/mixins/_syntax.scss",
+    "features/test_files/test_source/_sass/screen.scss",
+    "features/test_files/test_source/about.md",
+    "features/test_files/test_source/atom.xml",
+    "features/test_files/test_source/config.rb",
+    "features/test_files/test_source/images/feed-icon.png",
+    "features/test_files/test_source/index.html",
+    "features/test_files/test_source/robots.txt",
+    "features/test_files/test_source/sitemap.xml",
+    "features/test_files/test_source/stylesheets/screen.css",
+    "features/tmp/.keep",
+    "features/vhs-generate-posts.feature",
+    "features/vhs-init.feature",
+    "features/vhs-process.feature",
+    "features/vhs-publish.feature",
+    "lib/hit_stats.rb",
+    "lib/parser.rb",
     "lib/stat_counter.rb",
-    "lib/varnish-hit-stats.rb",
     "site/.gitignore",
     "site/README.md",
     "site/Rakefile",
@@ -56,9 +81,10 @@ Gem::Specification.new do |s|
     "site/robots.txt",
     "site/sitemap.xml",
     "site/stylesheets/screen.css",
+    "spec/hit_stats_spec.rb",
     "spec/spec_helper.rb",
     "spec/stat_counter_spec.rb",
-    "spec/varnish-hit-stats_spec.rb"
+    "varnish-hit-stats.gemspec"
   ]
   s.homepage = "http://github.com/jpastuszek/varnish-hit-stats"
   s.licenses = ["MIT"]
@@ -70,7 +96,7 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<universal-access-log-parser>, [">= 0"])
+      s.add_runtime_dependency(%q<universal-access-log-parser>, ["~> 1.0.0"])
       s.add_runtime_dependency(%q<jekyll>, ["~> 0.11.0"])
       s.add_runtime_dependency(%q<rdiscount>, ["~> 1.6.8"])
       s.add_runtime_dependency(%q<compass>, ["~> 0.11.5"])
@@ -85,7 +111,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rcov>, [">= 0"])
       s.add_development_dependency(%q<rake>, ["~> 0.9.2"])
     else
-      s.add_dependency(%q<universal-access-log-parser>, [">= 0"])
+      s.add_dependency(%q<universal-access-log-parser>, ["~> 1.0.0"])
       s.add_dependency(%q<jekyll>, ["~> 0.11.0"])
       s.add_dependency(%q<rdiscount>, ["~> 1.6.8"])
       s.add_dependency(%q<compass>, ["~> 0.11.5"])
@@ -101,7 +127,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<rake>, ["~> 0.9.2"])
     end
   else
-    s.add_dependency(%q<universal-access-log-parser>, [">= 0"])
+    s.add_dependency(%q<universal-access-log-parser>, ["~> 1.0.0"])
     s.add_dependency(%q<jekyll>, ["~> 0.11.0"])
     s.add_dependency(%q<rdiscount>, ["~> 1.6.8"])
     s.add_dependency(%q<compass>, ["~> 0.11.5"])
