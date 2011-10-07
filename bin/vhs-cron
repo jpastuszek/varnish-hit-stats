@@ -1,16 +1,18 @@
-#!/bin/bash
+#!/usr/bin/ruby
+require 'pathname'
+require 'active_support/core_ext'
 
-JEKYLL_DIR=/var/lib/vhs/jekyll
-DATA_DIR=/var/lib/vhs/data
-SITE_DIR=/srv/http/stats
+jekyll_dir = Pathname.new("/var/lib/vhs/jekyll")
+data_dir = Pathname.new("/var/lib/vhs/data")
+site_dir = Pathname.new("/srv/http/stats")
 
-[[ -d $JEKYLL_DIR ]] || mkdir -p $JEKYLL_DIR
-[[ -d $DATA_DIR ]] || mkdir -p $DATA_DIR
-[[ -d $SITE_DIR ]] || mkdir -p $SITE_DIR
+jekyll_dir.mkpath unless jekyll_dir.directory?
+data_dir.mkpath unless data_dir.directory?
+site_dir.mkpath unless site_dir.directory?
 
-DATA_FILE=${DATA_DIR}/`date +%Y-%m-%d --date yesterday`.yml
+data_file = "#{data_dir}/#{Time.now.yesterday.strftime('%Y-%m-%d')}.yml" 
 
-cat /var/log/varnish/varnishncsa.log.1 | vhs-process > $DATA_FILE
-cat $DATA_FILE | vhs-generate-posts $JEKYLL_DIR
-vhs-publish $JEKYLL_DIR $SITE_DIR
+system("cat /var/log/varnish/varnishncsa.log.1 | vhs-process > '#{data_file}'")
+system("cat '#{data_file}' | vhs-generate-posts '#{jekyll_dir}'")
+system("vhs-publish '#{jekyll_dir}' '#{site_dir}'")
 
