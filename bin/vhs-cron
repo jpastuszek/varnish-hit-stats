@@ -6,9 +6,13 @@ jekyll_dir = Pathname.new("/var/lib/vhs/jekyll")
 data_dir = Pathname.new("/var/lib/vhs/data")
 site_dir = Pathname.new("/srv/http/stats")
 
-jekyll_dir.mkpath unless jekyll_dir.directory?
 data_dir.mkpath unless data_dir.directory?
 site_dir.mkpath unless site_dir.directory?
+
+unless jekyll_dir.directory?
+	jekyll_dir.mkpath 
+	system("vhs-init #{jekyll_dir}")
+end
 
 data_file = "#{data_dir}/#{Time.now.yesterday.strftime('%Y-%m-%d')}.yml" 
 
