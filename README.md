@@ -8,9 +8,13 @@
 ## Usage
 
 `vhs-init <jekyll dir>` copies initial Jekyll site source directory keeping _posts and _config.yml untouched
+
 `vhs-process` generates stats in YAML output format from input Varnish NCSA log *special* file
+
 `vhs-generate-posts <jekyll dir>` generates Jekyll post files from input YAML data
+
 `vhs-publish <jekyll dir> <website dir>` generated website from Jekyll directory to given website directory
+
 `vhs-cron` generate website to `/srv/http/stats` from `/var/log/varnish/varnishncsa.log.1`
 
 Example:
