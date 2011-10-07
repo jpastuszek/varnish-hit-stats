@@ -1,0 +1,16 @@
+#!/bin/bash
+
+JEKYLL_DIR=/var/lib/vhs/jekyll
+DATA_DIR=/var/lib/vhs/data
+SITE_DIR=/srv/http/stats
+
+[[ -d $JEKYLL_DIR ]] || mkdir -p $JEKYLL_DIR
+[[ -d $DATA_DIR ]] || mkdir -p $DATA_DIR
+[[ -d $SITE_DIR ]] || mkdir -p $SITE_DIR
+
+DATA_FILE=${DATA_DIR}/`date +%Y-%m-%d --date yesterday`.yml
+
+cat /var/log/varnish/varnishncsa.log.1 | vhs-process > $DATA_FILE
+cat $DATA_FILE | vhs-generate-posts $JEKYLL_DIR
+vhs-publish $JEKYLL_DIR $SITE_DIR
+
