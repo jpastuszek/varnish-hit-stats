@@ -11,7 +11,7 @@ layout: default
   <h2>Related Posts</h2>
   <ul class="posts">
     {% for post in site.related_posts limit:5 %}
-      <li><span>{{ post.date | date_to_string }}</span> - <a href="{{ post.url }}">{{ post.title }}</a></li>
+      <li><span>{{ post.date | date_to_string }}</span> - <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></li>
     {% endfor %}
   </ul>
 </div>
@@ -21,7 +21,7 @@ layout: default
   <h2>Comments</h2>
   <div id="disqus_thread"></div>
   <script type="text/javascript">
-    var disqus_identifier = "{{ page.url }}";
+    var disqus_identifier = "{{ site.baseurl }}{{ page.url }}";
     (function() {
      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
      dsq.src = 'http://{{ site.disqus.id }}.disqus.com/embed.js';
