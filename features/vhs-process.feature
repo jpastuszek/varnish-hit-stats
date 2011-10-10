@@ -52,5 +52,11 @@ Feature: Processing Varnish access log file
 		    :total: 7
 		    :hit_to_total_ratio: 0.428571428571429
 		    :hit: 3
+		  total:
+		    :hit: 42
+		    :pass: 23
+		    :miss: 45
+		    :hit_to_total_ratio: 0.381818181818182
+		    :total: 110
 		"""
 

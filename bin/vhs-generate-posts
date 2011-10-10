@@ -38,18 +38,14 @@ sets.each_pair do |set, data|
 			io.puts 'tags: [varnish hit stats]'
 			io.puts '---'
 
-			totals = {}
+			total = data.delete('total')
 
 			io.puts  "|_. Page Class |_. Pass |_. Hit |_. Miss |_. Total |_. Hit/Total |"
 			data.keys.sort.each do |page_class|
 				stats = data[page_class]
-				stats.keys.each do |stat|
-					totals[stat] ||= 0
-					totals[stat] = totals[stat] + stats[stat]
-				end
 				io.puts "| %s | %i | %i | %i | %i | %f |" % [page_class, stats[:pass], stats[:hit], stats[:miss], stats[:total], stats[:hit_to_total_ratio]]
 			end
-			io.puts "| *total* | *%i* | *%i* | *%i* | *%i* | *%f* |" % [totals[:pass], totals[:hit], totals[:miss], totals[:total], totals[:hit].to_f / totals[:total]]
+			io.puts "| *total* | *%i* | *%i* | *%i* | *%i* | *%f* |" % [total[:pass], total[:hit], total[:miss], total[:total], total[:hit].to_f / total[:total]]
 		end
 	end
 end

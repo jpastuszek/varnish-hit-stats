@@ -20,14 +20,22 @@ class HitStats
 
 	def to_hash
 		h = {}
-		each_page_class_stat do |page_class, s|
-			h[page_class] ||= {}
-			h[page_class][:pass] = s.pass
-			h[page_class][:miss] = s.miss
-			h[page_class][:hit] = s.hit
-			h[page_class][:total] = s.total
-			h[page_class][:hit_to_total_ratio] = s.hit_to_total_ratio
+
+		@stats.each_pair do |page_class, s|
+			pc = h[page_class] ||= {:pass => 0, :hit => 0, :miss => 0}
+			pc.merge! s
+			pc[:total] = s.total
+			pc[:hit_to_total_ratio] = s.hit_to_total_ratio
 		end
+
+		total = h['total'] = Hash.new(0)
+		h.each_pair do |page_class, s|
+			s.each_pair do |k, v|
+				total[k] += v
+			end
+		end
+
+		total[:hit_to_total_ratio] = total[:hit].to_f / total[:total]
 		h
 	end
 

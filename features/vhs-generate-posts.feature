@@ -16,7 +16,6 @@ Feature: Generating Jkyll posts from YAML data
 		When I run vhs-generate-posts script
 		Then the _posts directory will contain 2011-10-03 post template titled Varnish Hit Stats that will include
 		"""
-		0.486486
+		0.381818
 		"""
-		
 		
