@@ -47,6 +47,23 @@ sets.each_pair do |set, data|
 			end
 			io.puts "| *total* | *%i* | *%i* | *%i* | *%i* | *%f* |" % [total[:pass], total[:hit], total[:miss], total[:total], total[:hit].to_f / total[:total]]
 		end
+	when :response_time
+		write_post(date, 'varnish-response-time-stats') do |io|
+			io.puts '---'
+			io.puts 'layout: post'
+			io.puts 'title: Varnish response time stats'
+			io.puts 'tags: [varnish response time stats]'
+			io.puts '---'
+
+			total = data.delete('total')
+
+			io.puts  "|_. Page Class |_. Total Requests |_. Minimum Response Time [s]  |_. Maximum Response Time [s] |_. Average Response Time [s] |"
+			data.keys.sort.each do |page_class|
+				stats = data[page_class]
+				io.puts "| %s | %i | %f | %f | %f |" % [page_class, stats[:total_requests], stats[:min_time], stats[:max_time], stats[:average_time]]
+			end
+			io.puts "| *total* | *%i* | *%f* | *%f* | *%f* |" % [total[:total_requests], total[:min_time], total[:max_time], total[:average_time]]
+		end
 	end
 end
 
