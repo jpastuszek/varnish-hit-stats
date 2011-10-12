@@ -7,9 +7,13 @@ Feature: Generating Jkyll posts from YAML data
 		Given USE_BUNDLER_EXEC env var set to true
 		And gem bin directory in PATH
 		Given source directory
+		Given source directory is empty
+		Given jekyll directory
+		Given source directory contain what jekyll directory contains
 		Given source _posts directory
 		And _posts directory is empty
 
+	@test
 	Scenario: Generating Hit statistics post with vhs-generate-posts
 		Given source directory as script argument
 		And content of test1.yml file piped in STDIN
