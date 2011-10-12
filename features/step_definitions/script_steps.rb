@@ -19,3 +19,10 @@ Then /will output yaml that is the same as/ do |yaml|
 	out.should == YAML.load(yaml)
 end
 
+Then /will output yaml that has the same hash structure and types as/ do |yaml|
+	out = YAML.load(@out)
+	test = YAML.load(yaml)
+
+	compare_trees(out, test)
+end
+

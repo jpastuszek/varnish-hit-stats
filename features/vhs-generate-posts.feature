@@ -14,8 +14,8 @@ Feature: Generating Jkyll posts from YAML data
 		Given source directory as script argument
 		And content of test1.yml file piped in STDIN
 		When I run vhs-generate-posts script
-		Then the _posts directory will contain 2011-10-03 post template titled Varnish Hit Stats that will include
+		Then the _posts directory will contain 2011-10-12 post template titled Varnish Hit Stats that will include
 		"""
-		0.381818
+		0.366667
 		"""
 		

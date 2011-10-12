@@ -6,7 +6,7 @@ Feature: Processing Varnish access log file
 	Scenario: Processing varinsh access log file with vhs-process
 		Given content of test1.log file piped in STDIN
 		When I run vhs-process script
-		Then it will output yaml that is the same as
+		Then it will output yaml that has the same hash structure and types as
 		"""
 		--- 
 		:info:
@@ -16,12 +16,6 @@ Feature: Processing Varnish access log file
 		  :failures: 0
 		  :successes: 71
 		:hit: 
-		  unset: 
-		    :pass: 1
-		    :miss: 0
-		    :total: 1
-		    :hit_to_total_ratio: 0.0
-		    :hit: 0
 		  Response-Status: 
 		    :pass: 1
 		    :miss: 0

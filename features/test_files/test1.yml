@@ -1,50 +1,50 @@
 --- 
 :info: 
-  :last_entry_time: 2011-10-03 16:30:17 Z
-  :first_entry_time: 2011-10-03 16:26:04 Z
-:parser: 
-  :successes: 71
-  :failures: 0
+  :first_entry_time: 2011-10-12 13:02:06 Z
+  :last_entry_time: 2011-10-12 13:09:20 Z
 :hit: 
-  unset: 
-    :pass: 1
-    :total: 1
-    :hit_to_total_ratio: 0.0
-    :hit: 0
-    :miss: 0
   Response-Status: 
-    :pass: 1
-    :total: 1
-    :hit_to_total_ratio: 0.0
+    :pass: 2
     :hit: 0
     :miss: 0
+    :total: 2
+    :hit_to_total_ratio: 0.0
   Cache-Default: 
     :pass: 0
-    :total: 37
-    :hit_to_total_ratio: 0.486486486486487
-    :hit: 18
-    :miss: 19
+    :hit: 9
+    :miss: 8
+    :total: 17
+    :hit_to_total_ratio: 0.529411764705882
   total: 
-    :pass: 23
-    :total: 110
-    :hit_to_total_ratio: 0.381818181818182
-    :hit: 42
-    :miss: 45
-  Cache-Brochure: 
-    :pass: 0
-    :total: 6
-    :hit_to_total_ratio: 0.5
-    :hit: 3
-    :miss: 3
-  URL-List: 
-    :pass: 19
-    :total: 19
-    :hit_to_total_ratio: 0.0
+    :pass: 18
+    :hit: 22
+    :miss: 20
+    :total: 60
+    :hit_to_total_ratio: 0.366666666666667
+  Host-Redirect: 
+    :pass: 3
     :hit: 0
     :miss: 0
+    :total: 3
+    :hit_to_total_ratio: 0.0
+  Cache-Brochure: 
+    :pass: 0
+    :hit: 2
+    :miss: 2
+    :total: 4
+    :hit_to_total_ratio: 0.5
+  URL-List: 
+    :pass: 11
+    :hit: 0
+    :miss: 0
+    :total: 11
+    :hit_to_total_ratio: 0.0
   Cache-Search: 
     :pass: 0
-    :total: 7
-    :hit_to_total_ratio: 0.428571428571429
-    :hit: 3
-    :miss: 4
+    :hit: 2
+    :miss: 2
+    :total: 4
+    :hit_to_total_ratio: 0.5
+:parser: 
+  :successes: 41
+  :failures: 0

@@ -53,3 +53,14 @@ def script_output_from_input(in_file, file, *args)
 	out
 end
 
+def compare_trees(a, b)
+	a.should be_a(b.class)
+
+	if b.is_a? Hash
+		b.each_pair do |k, v|
+			a.should include(k)
+			compare_trees(a[k], v)
+		end
+	end
+end
+

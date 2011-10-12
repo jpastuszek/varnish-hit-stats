@@ -22,3 +22,14 @@ def test_file(file)
 	features_dir + 'test_files' + file
 end
 
+def compare_trees(a, b)
+	a.should be_a(b.class)
+
+	if b.is_a? Hash
+		b.each_pair do |k, v|
+			a.should include(k)
+			compare_trees(a[k], v)
+		end
+	end
+end
+
