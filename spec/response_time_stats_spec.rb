@@ -23,7 +23,6 @@ describe ResponseTimeStats do
 		}
 
 		s = @stats.to_hash
-		#pp s
 		
 		compare_trees(s, h)
 
