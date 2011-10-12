@@ -2,6 +2,7 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'parser'
 require 'hit_stats'
+require 'response_time_stats'
 require 'yaml'
 
 stats = {}
@@ -10,12 +11,14 @@ first_entry_time = nil
 last = nil
 
 hit_stats = HitStats.new
+response_time_stats = ResponseTimeStats.new
 
 parser_stats = UniversalAccessLogParser.varnish.parse_io(STDIN).each do |entry|
 	first_entry_time ||= entry.time
 	last = entry
 
 	hit_stats.process(entry)
+	response_time_stats.process(entry)
 end
 
 last_entry_time = last.time
@@ -24,6 +27,7 @@ stats[:info] = {:first_entry_time => first_entry_time, :last_entry_time => last_
 stats[:parser] = {:successes => parser_stats.successes, :failures => parser_stats.failures}
 
 stats[:hit] = hit_stats.to_hash
+stats[:response_time] = response_time_stats.to_hash
 
 puts stats.to_yaml
 

@@ -8,6 +8,7 @@ UniversalAccessLogParser.parser(:varnish) do
 	integer :cache_hits
 	float :cache_ttl, :nil_on => '-'
 	integer :cache_age
+	float :response_time
 end
 
 
