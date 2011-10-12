@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "varnish-hit-stats"
-  s.version = "0.3.0"
+  s.version = "0.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jakub Pastuszek"]
-  s.date = "2011-10-10"
+  s.date = "2011-10-12"
   s.description = "Parsers and stat tools to analize Varnish ncsa logs"
   s.email = "jpastuszek@gmail.com"
   s.executables = ["vhs-generate-posts", "vhs-cron", "vhs-process", "vhs-init", "vhs-publish"]
@@ -63,6 +63,7 @@ Gem::Specification.new do |s|
     "features/vhs-publish.feature",
     "lib/hit_stats.rb",
     "lib/parser.rb",
+    "lib/response_time_stats.rb",
     "lib/stat_counter.rb",
     "site/.gitignore",
     "site/README.md",
@@ -82,6 +83,7 @@ Gem::Specification.new do |s|
     "site/sitemap.xml",
     "site/stylesheets/screen.css",
     "spec/hit_stats_spec.rb",
+    "spec/response_time_stats_spec.rb",
     "spec/spec_helper.rb",
     "spec/stat_counter_spec.rb",
     "varnish-hit-stats.gemspec"
@@ -104,7 +106,6 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<RedCloth>, ["~> 4.2.2"])
       s.add_runtime_dependency(%q<i18n>, [">= 0.5.0"])
       s.add_runtime_dependency(%q<activesupport>, ["~> 3.0.0"])
-      s.add_runtime_dependency(%q<cairo>, ["~> 1.10.0"])
       s.add_development_dependency(%q<rspec>, ["~> 2.6.0"])
       s.add_development_dependency(%q<cucumber>, [">= 0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
@@ -120,7 +121,6 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<RedCloth>, ["~> 4.2.2"])
       s.add_dependency(%q<i18n>, [">= 0.5.0"])
       s.add_dependency(%q<activesupport>, ["~> 3.0.0"])
-      s.add_dependency(%q<cairo>, ["~> 1.10.0"])
       s.add_dependency(%q<rspec>, ["~> 2.6.0"])
       s.add_dependency(%q<cucumber>, [">= 0"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
@@ -137,7 +137,6 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<RedCloth>, ["~> 4.2.2"])
     s.add_dependency(%q<i18n>, [">= 0.5.0"])
     s.add_dependency(%q<activesupport>, ["~> 3.0.0"])
-    s.add_dependency(%q<cairo>, ["~> 1.10.0"])
     s.add_dependency(%q<rspec>, ["~> 2.6.0"])
     s.add_dependency(%q<cucumber>, [">= 0"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
