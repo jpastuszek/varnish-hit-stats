@@ -42,13 +42,13 @@ class ShellScript
 		def default
 			@options[:default]
 		end
+
+		def to_s
+			name.to_s.tr('_', '-')
+		end
 	end
 
 	class Option < Argument
-		def switch
-			'--' + name.to_s.tr('_', '-')
-		end
-
 		def has_short?
 			@options.member? :short
 		end
@@ -63,6 +63,18 @@ class ShellScript
 
 		def short
 			@options[:short]
+		end
+
+		def to_s
+			switch
+		end
+
+		def switch
+			'--' + name.to_s.tr('_', '-')
+		end
+
+		def switch_short
+			'-' + short.to_s
 		end
 	end
 
@@ -115,7 +127,7 @@ class ShellScript
 			end
 
 			if option
-				value = @argv.shift or raise ParsingError, "missing option argument: #{option.switch}"
+				value = @argv.shift or raise ParsingError, "missing option argument: #{option}"
 				parsed.set(option, value)
 				@options_required.delete(option)
 			else
@@ -127,11 +139,12 @@ class ShellScript
 		raise ParsingError, "following options are required but were not specified: #{@options_required.map{|o| o.switch}.join(', ')}" unless @options_required.empty?
 
 		# process arguments
-		while argument = @arguments.shift
-			value = if @argv.length < @arguments.length + 1 and argument.optional?
+		arguments = @arguments.dup
+		while argument = arguments.shift
+			value = if @argv.length < arguments.length + 1 and argument.optional?
 				argument.default # not enough arguments, try to skip optional if possible
 			else
-				@argv.shift or raise ParsingError, "missing argument: #{argument.name}"
+				@argv.shift or raise ParsingError, "missing argument: #{argument}"
 			end
 
 			parsed.set(argument, value)
@@ -160,7 +173,21 @@ class ShellScript
 
 	def usage!(msg = nil)
 		@stderr.puts msg if msg
-		@stderr.puts "Usage: #{File.basename $0}"
+		@stderr.print "Usage: #{File.basename $0}"
+		@stderr.print ' [options]' unless @optoins_long.empty?
+		@stderr.print ' ' + @arguments.map{|a| a.to_s}.join(' ') unless @arguments.empty?
+		@stderr.puts
+		@stderr.puts
+		unless @optoins_long.empty?
+			@stderr.puts "Options:"
+			@optoins_long.values.each do |o|
+				@stderr.print '   '
+				@stderr.print o.switch
+				@stderr.print " (#{o.switch_short})" if o.has_short?
+				@stderr.print " [%s]" % o.default if o.has_default?
+				@stderr.puts
+			end
+		end
 	end
 end
 
