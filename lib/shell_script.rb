@@ -57,6 +57,10 @@ class ShellScript
 			@options.member? :default
 		end
 
+		def optional?
+			has_default? or not @options[:required]
+		end
+
 		def short
 			@options[:short]
 		end
@@ -64,9 +68,11 @@ class ShellScript
 
 	def initialize(argv = ARGV, &block)
 		@argv = argv
+		#TODO: optoins should be in own class?
 		@optoins_long = {}
 		@optoins_short = {}
 		@options_default = []
+		@options_required = []
 		@arguments = []
 		instance_eval(&block) if block_given?
 	end
@@ -85,6 +91,7 @@ class ShellScript
 		@optoins_long[name] = o
 		@optoins_short[o.short] = o if o.has_short?
 		@options_default << o if o.has_default?
+		@options_required << o unless o.optional?
 	end
 
 	def parse!
@@ -107,10 +114,14 @@ class ShellScript
 			if option
 				value = @argv.shift or raise ParsingError, "missing option argument: #{option.switch}"
 				parsed.set(option, value)
+				@options_required.delete(option)
 			else
 				raise ParsingError, "unknonw switch: #{switch}"
 			end
 		end
+
+		# check required
+		raise ParsingError, "following options are required but were not specified: #{@options_required.map{|o| o.switch}.join(', ')}" unless @options_required.empty?
 
 		# process arguments
 		while argument = @arguments.shift

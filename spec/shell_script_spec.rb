@@ -176,18 +176,29 @@ EOF
 			ps.size.should == 24
 		end
 
+		it "not given and not defined options should be nil" do
+			ps = ShellScript.new([]) do
+				option :size, :cast => Integer
+			end.parse!
+			ps.size.should be_nil
+			ps.gold.should be_nil
+		end
+
 		it "should handle multiple long and short intermixed options" do
 			ps = ShellScript.new(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL']) do
 				option :location, :short => :l
 				option :group, :default => 'red'
 				option :power_up, :short => :p
 				option :speed, :short => :s, :cast => Integer
+				option :not_given
 				option :size
 			end.parse!
 			ps.group.should == 'red'
 			ps.power_up.should == 'yes'
 			ps.speed.should == 24
+			ps.not_given.should be_nil
 			ps.size.should == 'XXXL'
+			ps.gold.should be_nil
 		end
 
 		it "should raise error on unrecognized switch" do
@@ -208,6 +219,19 @@ EOF
 			lambda {
 				ps.parse!
 			}.should raise_error ShellScript::ParsingError
+		end
+
+		it "should raise error on missing required option" do
+			ps = ShellScript.new(['--location', 'singapore']) do
+				option :location
+				option :size, :required => true
+				option :group, :default => 'red'
+				option :speed, :short => :s, :cast => Integer
+			end
+			
+			lambda {
+				ps.parse!
+			}.should raise_error ShellScript::ParsingError, "following options are required but were not specified: --size"
 		end
 	end
 
