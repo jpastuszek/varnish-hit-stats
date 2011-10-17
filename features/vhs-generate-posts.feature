@@ -11,10 +11,9 @@ Feature: Generating Jkyll posts from YAML data
 		Given jekyll directory
 		Given source directory contain what jekyll directory contains
 		Given source _posts directory
-		And _posts directory is empty
 
-	@test
 	Scenario: Generating Hit statistics post with vhs-generate-posts
+		And _posts directory is empty
 		Given source directory as script argument
 		And content of test1.yml file piped in STDIN
 		When I run vhs-generate-posts script
@@ -26,4 +25,12 @@ Feature: Generating Jkyll posts from YAML data
 		"""
 		0.760594
 		"""
+		
+	Scenario: vhs-generate-post when no data is available (empty data set)
+		And _posts directory is empty
+		Given source directory as script argument
+		And content of test_empty.yml file piped in STDIN
+		When I run vhs-generate-posts script
+		Then the _posts directory will not contain 2011-10-12 post template titled Varnish hit stats
+		And the _posts directory will not contain 2011-10-12 post template titled Varnish response time stats
 		

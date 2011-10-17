@@ -1,5 +1,7 @@
 #!/usr/bin/ruby
 require 'pathname'
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+require 'shell_script'
 
 def run(cmd)
 	c = []
@@ -11,7 +13,11 @@ def run(cmd)
 	raise "failed to execute command: #{cmd}" unless $?.success?
 end
 
-source_dir = Pathname.new(ARGV.shift)
+script = ShellScript.new do
+	argument :source_dir, :cast => Pathname
+end.parse!
+
+source_dir = script.source_dir
 jekyll_dir = Pathname.new(__FILE__).dirname + '..' + 'site'
 
 raise "jekyll directory does not exist: #{jekyll_dir}" unless jekyll_dir.exist?

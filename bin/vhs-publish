@@ -1,9 +1,15 @@
 #!/usr/bin/ruby
 require 'pathname'
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+require 'shell_script'
 
-source_dir = Pathname.new(ARGV.shift)
-site_dir = Pathname.new(ARGV.shift)
+script = ShellScript.new do
+	argument :source_dir, :cast => Pathname
+	argument :site_dir, :cast => Pathname
+end.parse!
+
+source_dir = script.source_dir
+site_dir = script.site_dir
 
 raise "source directory does not exist: #{source_dir}" unless source_dir.exist?
 raise "site directory does not exist: #{site_dir}" unless site_dir.exist?

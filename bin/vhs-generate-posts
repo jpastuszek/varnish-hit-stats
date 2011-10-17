@@ -3,14 +3,20 @@ require 'yaml'
 require 'pathname'
 require 'active_support/core_ext'
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+require 'shell_script'
 
-source_dir = Pathname.new(ARGV.shift)
+script = ShellScript.new do
+	stdin :yaml
+	argument :source_dir, :cast => Pathname
+end.parse!
+
+source_dir = script.source_dir
 $posts_dir = source_dir + '_posts'
 
 raise "source directory does not exist: #{source_dir}" unless source_dir.directory?
 raise "_posts directory does not exist: #{$posts_dir}" unless $posts_dir.directory?
 
-sets = YAML.load(STDIN)
+sets = script.stdin
 
 date = Time.now.yesterday.strftime('%Y-%m-%d')
 
