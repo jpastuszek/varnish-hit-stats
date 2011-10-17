@@ -44,7 +44,7 @@ EOF
 	end
 
 	describe 'argument handling' do
-		it "should handle single argument with default casting" do
+		it "should handle single argument" do
 			ps = ShellScript.new(['/tmp']) do
 				argument :log
 			end.parse!
@@ -138,6 +138,91 @@ EOF
 				ps.code.should == 123
 			end
 		end
+	end
+
+	describe 'option handling' do
+		it "should handle long option names" do
+			ps = ShellScript.new(['--location', 'singapore']) do
+				option :location
+			end.parse!
+			ps.location.should be_a String
+			ps.location.should == 'singapore'
+		end
+
+		it "should handle short option names" do
+			ps = ShellScript.new(['-l', 'singapore']) do
+				option :location, :short => :l
+			end.parse!
+			ps.location.should be_a String
+			ps.location.should == 'singapore'
+		end
+
+		it "should support casting" do
+			ps = ShellScript.new(['--size', '24']) do
+				option :size, :cast => Integer
+			end.parse!
+			ps.size.should be_a Integer
+			ps.size.should == 24
+		end
+
+		it "should handle multiple long and short intermixed options" do
+			ps = ShellScript.new(['-l', 'singapore', '--group', 'red', '--power-up', 'yes', '-s', '24', '--size', 'XXXL']) do
+				option :location, :short => :l
+				option :group
+				option :power_up, :short => :p
+				option :speed, :short => :s, :cast => Integer
+				option :size
+			end.parse!
+			ps.group.should == 'red'
+			ps.power_up.should == 'yes'
+			ps.speed.should == 24
+			ps.size.should == 'XXXL'
+		end
+
+		it "should raise error on unrecognized switch" do
+			ps = ShellScript.new(['--xxx', 'singapore']) do
+				option :location
+			end
+			
+			lambda {
+				ps.parse!
+			}.should raise_error ShellScript::ParsingError
+		end
+
+		it "should raise error on missing option argument" do
+			ps = ShellScript.new(['--location']) do
+				option :location
+			end
+			
+			lambda {
+				ps.parse!
+			}.should raise_error ShellScript::ParsingError
+		end
+	end
+
+	it "should handle options and then arguments" do
+			ps = ShellScript.new(['-l', 'singapore', '--group', 'red', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello']) do
+				option :location, :short => :l
+				option :group
+				option :power_up, :short => :p
+				option :speed, :short => :s, :cast => Integer
+				option :size
+
+				argument :log, :cast => Pathname
+				argument :magick, :default => 'word'
+				argument :test
+				argument :code, :cast => Integer, :default => '123'
+			end.parse!
+
+			ps.group.should == 'red'
+			ps.power_up.should == 'yes'
+			ps.speed.should == 24
+			ps.size.should == 'XXXL'
+
+			ps.log.to_s.should == '/tmp'
+			ps.magick.should == 'word'
+			ps.test.should == 'hello'
+			ps.code.should == 123
 	end
 end
 

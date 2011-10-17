@@ -5,6 +5,9 @@ class ShellScript
 	end
 
 	class Parsed < OpenStruct
+		def set(argument, value)
+			send((argument.name.to_s + '=').to_sym, argument.cast(value)) 
+		end
 	end
 
 	class Argument
@@ -41,8 +44,24 @@ class ShellScript
 		end
 	end
 
+	class Option < Argument
+		def switch
+			'--' + name.to_s.tr('_', '-')
+		end
+
+		def has_short?
+			@options.member? :short
+		end
+
+		def short
+			@options[:short]
+		end
+	end
+
 	def initialize(argv = ARGV, &block)
 		@argv = argv
+		@optoins_long = {}
+		@optoins_short = {}
 		@arguments = []
 		instance_eval(&block) if block_given?
 	end
@@ -56,8 +75,30 @@ class ShellScript
 		@arguments << Argument.new(name, options)
 	end
 
+	def option(name, options = {})
+		o = Option.new(name, options)
+		@optoins_long[name] = o
+		@optoins_short[o.short] = o if o.has_short?
+	end
+
 	def parse!
 		parsed = Parsed.new
+
+		while @argv.first =~ /^-/
+			switch = @argv.shift
+			option = if switch =~ /^--/
+				@optoins_long[switch.sub(/^--/, '').tr('-', '_').to_sym]
+			else
+				@optoins_short[switch.sub(/^-/, '').tr('-', '_').to_sym]
+			end
+
+			if option
+				value = @argv.shift or raise ParsingError, "missing option argument: #{option.switch}"
+				parsed.set(option, value)
+			else
+				raise ParsingError, "unknonw switch: #{switch}"
+			end
+		end
 
 		while argument = @arguments.shift
 			value = if @argv.length < @arguments.length + 1 and argument.optional?
@@ -66,7 +107,7 @@ class ShellScript
 				@argv.shift or raise ParsingError, "missing argument: #{argument.name}"
 			end
 
-			parsed.send((argument.name.to_s + '=').to_sym, argument.cast(value)) 
+			parsed.set(argument, value)
 		end
 
 		case @stdin_type
