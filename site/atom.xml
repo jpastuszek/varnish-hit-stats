@@ -8,7 +8,7 @@ layout: nil
  <link href="{{ site.root }}/atom.xml" rel="self"/>
  <link href="{{ site.root }}/"/>
  <updated>{{ site.time | date_to_xmlschema }}</updated>
- <id>{{ site.protocol }}://{{ site.domain }}/</id>
+ <id>{{ site.root }}</id>
  <author>
    <name>{{ site.author }}</name>
    <email>{{ site.email }}</email>
@@ -19,7 +19,7 @@ layout: nil
    <title>{{ post.title }}</title>
    <link href="{{ site.root }}{{ post.url }}"/>
    <updated>{{ post.date | date_to_xmlschema }}</updated>
-   <id>{{ site.protocol }}://{{ site.domain }}{{ post.id }}</id>
+   <id>{{ site.root }}{{ post.id }}</id>
    <content type="html">{{ post.content | xml_escape }}</content>
  </entry>
  {% endfor %}
