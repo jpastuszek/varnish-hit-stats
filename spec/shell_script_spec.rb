@@ -157,6 +157,14 @@ EOF
 			ps.location.should == 'singapore'
 		end
 
+		it "should handle default values" do
+			ps = ShellScript.new([]) do
+				option :location, :default => 'singapore'
+			end.parse!
+			ps.location.should be_a String
+			ps.location.should == 'singapore'
+		end
+
 		it "should support casting" do
 			ps = ShellScript.new(['--size', '24']) do
 				option :size, :cast => Integer
@@ -166,9 +174,9 @@ EOF
 		end
 
 		it "should handle multiple long and short intermixed options" do
-			ps = ShellScript.new(['-l', 'singapore', '--group', 'red', '--power-up', 'yes', '-s', '24', '--size', 'XXXL']) do
+			ps = ShellScript.new(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL']) do
 				option :location, :short => :l
-				option :group
+				option :group, :default => 'red'
 				option :power_up, :short => :p
 				option :speed, :short => :s, :cast => Integer
 				option :size
@@ -201,9 +209,9 @@ EOF
 	end
 
 	it "should handle options and then arguments" do
-			ps = ShellScript.new(['-l', 'singapore', '--group', 'red', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello']) do
+			ps = ShellScript.new(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello']) do
 				option :location, :short => :l
-				option :group
+				option :group, :default => 'red'
 				option :power_up, :short => :p
 				option :speed, :short => :s, :cast => Integer
 				option :size

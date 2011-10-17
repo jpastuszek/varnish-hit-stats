@@ -53,6 +53,10 @@ class ShellScript
 			@options.member? :short
 		end
 
+		def has_default?
+			@options.member? :default
+		end
+
 		def short
 			@options[:short]
 		end
@@ -62,6 +66,7 @@ class ShellScript
 		@argv = argv
 		@optoins_long = {}
 		@optoins_short = {}
+		@options_default = []
 		@arguments = []
 		instance_eval(&block) if block_given?
 	end
@@ -79,11 +84,18 @@ class ShellScript
 		o = Option.new(name, options)
 		@optoins_long[name] = o
 		@optoins_short[o.short] = o if o.has_short?
+		@options_default << o if o.has_default?
 	end
 
 	def parse!
 		parsed = Parsed.new
 
+		# set defaults
+		@options_default.each do |o|
+			parsed.set(o, o.default)
+		end
+
+		# process switches
 		while @argv.first =~ /^-/
 			switch = @argv.shift
 			option = if switch =~ /^--/
@@ -100,6 +112,7 @@ class ShellScript
 			end
 		end
 
+		# process arguments
 		while argument = @arguments.shift
 			value = if @argv.length < @arguments.length + 1 and argument.optional?
 				argument.default # not enough arguments, try to skip optional if possible
@@ -110,6 +123,7 @@ class ShellScript
 			parsed.set(argument, value)
 		end
 
+		# process stdin
 		case @stdin_type
 			when :yaml
 				require 'yaml'
