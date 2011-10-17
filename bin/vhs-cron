@@ -1,10 +1,18 @@
 #!/usr/bin/ruby
 require 'pathname'
 require 'active_support/core_ext'
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+require 'shell_script'
 
-jekyll_dir = Pathname.new("/var/lib/vhs/jekyll")
-data_dir = Pathname.new("/var/lib/vhs/data")
-site_dir = Pathname.new("/srv/http/stats")
+script = ShellScript.new do
+	argument :jekyll_dir, :cast => Pathname, :default => '/var/lib/vhs/jekyll'
+	argument :data_dir, :cast => Pathname, :default => '/var/lib/vhs/data'
+	argument :site_dir, :cast => Pathname, :default => '/srv/http/stats'
+end.parse!
+
+jekyll_dir = script.jekyll_dir
+data_dir = script.data_dir
+site_dir = script.site_dir
 
 data_dir.mkpath unless data_dir.directory?
 site_dir.mkpath unless site_dir.directory?
