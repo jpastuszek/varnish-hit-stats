@@ -54,3 +54,18 @@ Feature: Processing Varnish access log file
 		    :total: 110
 		"""
 
+	Scenario: Processing of empty log file
+		Given content of test_empty.log file piped in STDIN
+		When I run vhs-process script
+		Then it will output yaml that has the same hash structure and types as
+		"""
+		--- 
+		:info:
+		  :first_entry_time: 
+		  :last_entry_time: 
+		:parser: 
+		  :failures: 0
+		  :successes: 0
+		"""
+
+

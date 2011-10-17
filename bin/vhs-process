@@ -8,6 +8,8 @@ require 'yaml'
 stats = {}
 
 first_entry_time = nil
+last_entry_time = nil
+
 last = nil
 
 hit_stats = HitStats.new
@@ -21,13 +23,15 @@ parser_stats = UniversalAccessLogParser.varnish.parse_io(STDIN).each do |entry|
 	response_time_stats.process(entry)
 end
 
-last_entry_time = last.time
+last_entry_time = last.time if last
 
 stats[:info] = {:first_entry_time => first_entry_time, :last_entry_time => last_entry_time}
 stats[:parser] = {:successes => parser_stats.successes, :failures => parser_stats.failures}
 
-stats[:hit] = hit_stats.to_hash
-stats[:response_time] = response_time_stats.to_hash
+if parser_stats.successes > 0
+	stats[:hit] = hit_stats.to_hash
+	stats[:response_time] = response_time_stats.to_hash
+end
 
 puts stats.to_yaml
 
