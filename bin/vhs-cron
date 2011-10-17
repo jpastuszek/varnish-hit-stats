@@ -5,15 +5,18 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'shell_script'
 
 script = ShellScript.new do
-	argument :jekyll_dir, :cast => Pathname, :default => '/var/lib/vhs/jekyll'
-	argument :data_dir, :cast => Pathname, :default => '/var/lib/vhs/data'
-	argument :site_dir, :cast => Pathname, :default => '/srv/http/stats'
+	option :jekyll_dir, :cast => Pathname, :default => '/var/lib/vhs/jekyll'
+	option :data_dir, :cast => Pathname, :default => '/var/lib/vhs/data'
+	option :site_dir, :cast => Pathname, :default => '/srv/http/stats'
+	option :location, :short => :l
+	argument :log_file, :cast => Pathname
 end.parse!
 
 jekyll_dir = script.jekyll_dir
 data_dir = script.data_dir
 site_dir = script.site_dir
 
+raise "log file not found: #{script.log_file}" unless script.log_file.readable?
 data_dir.mkpath unless data_dir.directory?
 site_dir.mkpath unless site_dir.directory?
 
@@ -24,7 +27,7 @@ end
 
 data_file = "#{data_dir}/#{Time.now.yesterday.strftime('%Y-%m-%d')}.yml" 
 
-system("cat /var/log/varnish/varnishncsa.log.1 | vhs-process > '#{data_file}'")
+system("cat '#{script.log_file.to_s}' | vhs-process > '#{data_file}'")
 system("cat '#{data_file}' | vhs-generate-posts '#{jekyll_dir}'")
 system("vhs-publish '#{jekyll_dir}' '#{site_dir}'")
 
