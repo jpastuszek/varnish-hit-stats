@@ -160,9 +160,12 @@ EOF
 		it "should handle default values" do
 			ps = ShellScript.new([]) do
 				option :location, :default => 'singapore'
+				option :size, :cast => Integer, :default => 23
 			end.parse!
 			ps.location.should be_a String
 			ps.location.should == 'singapore'
+			ps.size.should be_a Integer
+			ps.size.should == 23
 		end
 
 		it "should support casting" do
