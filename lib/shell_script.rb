@@ -19,10 +19,25 @@ class ShellScript
 
 		def cast(value)
 			begin
-				@options[:cast].new(value)
+				cast_class = @options[:cast]
+				if cast_class == Integer
+					value.to_i
+				elsif cast_class == Float
+					value.to_f
+				else
+					cast_class.new(value)
+				end
 			rescue => e
 				raise ParsingError, "failed to cast argument: #{@name} to type: #{@options[:cast].name}: #{e}"
 			end
+		end
+
+		def optional?
+			@options.member? :default
+		end
+
+		def default
+			@options[:default]
 		end
 	end
 
@@ -44,9 +59,13 @@ class ShellScript
 	def parse!
 		parsed = Parsed.new
 
-		@arguments.each do |argument|
-			value = @argv.shift
-			raise ParsingError, "missing argument: #{argument.name}" unless value
+		while argument = @arguments.shift
+			value = if @argv.length < @arguments.length + 1 and argument.optional?
+				argument.default # not enough arguments, try to skip optional if possible
+			else
+				@argv.shift or raise ParsingError, "missing argument: #{argument.name}"
+			end
+
 			parsed.send((argument.name.to_s + '=').to_sym, argument.cast(value)) 
 		end
 
