@@ -5,18 +5,19 @@ require 'active_support/core_ext'
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'shell_script'
 
-script = ShellScript.new do
+$script = ShellScript.new do
 	stdin :yaml
+	option :location, :short => :l
 	argument :source_dir, :cast => Pathname
 end.parse!
 
-source_dir = script.source_dir
+source_dir = $script.source_dir
 $posts_dir = source_dir + '_posts'
 
 raise "source directory does not exist: #{source_dir}" unless source_dir.directory?
 raise "_posts directory does not exist: #{$posts_dir}" unless $posts_dir.directory?
 
-sets = script.stdin
+sets = $script.stdin
 
 date = Time.now.yesterday.strftime('%Y-%m-%d')
 
@@ -28,8 +29,17 @@ def out_file(date, name)
 	$posts_dir + "#{date}-#{name}.textile"
 end
 
-def write_post(date, name)
-	out_file(date, name).open('w') do |io|
+def write_post(date, title, tags)
+	# location stuff
+	title = title + ' - ' + $script.location if $script.location
+	tags << $script.location.downcase if $script.location
+
+	out_file(date, title.downcase.tr(' :', '-')).open('w') do |io|
+		io.puts '---'
+		io.puts 'layout: post'
+		io.puts "title: #{title}"
+		io.puts "tags: [#{tags.join(' ')}]"
+		io.puts '---'
 		yield io
 	end
 end
@@ -37,13 +47,7 @@ end
 sets.each_pair do |set, data|
 	case set
 	when :hit
-		write_post(date, 'varnish-hit-stats') do |io|
-			io.puts '---'
-			io.puts 'layout: post'
-			io.puts 'title: Varnish hit stats'
-			io.puts 'tags: [varnish hit stats]'
-			io.puts '---'
-
+		write_post(date, 'Varnish hit stats', %w{varnish hit stats}) do |io|
 			total = data.delete('total')
 
 			io.puts  "|_. Page Class |_. Pass |_. Hit |_. Miss |_. Total |_. Hit/Total |"
@@ -54,13 +58,7 @@ sets.each_pair do |set, data|
 			io.puts "| *total* | *%i* | *%i* | *%i* | *%i* | *%f* |" % [total[:pass], total[:hit], total[:miss], total[:total], total[:hit].to_f / total[:total]]
 		end
 	when :response_time
-		write_post(date, 'varnish-response-time-stats') do |io|
-			io.puts '---'
-			io.puts 'layout: post'
-			io.puts 'title: Varnish response time stats'
-			io.puts 'tags: [varnish response time stats]'
-			io.puts '---'
-
+		write_post(date, 'Varnish response time stats', %w{varnish response time stats}) do |io|
 			total = data.delete('total')
 
 			io.puts  "|_. Page Class |_. Total Requests |_. Minimum Response Time [s]  |_. Maximum Response Time [s] |_. Average Response Time [s] |"

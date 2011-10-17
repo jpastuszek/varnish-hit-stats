@@ -25,6 +25,21 @@ Feature: Generating Jkyll posts from YAML data
 		"""
 		0.760594
 		"""
+
+	Scenario: Generating Hit statistics post with vhs-generate-posts and location
+		And _posts directory is empty
+		Given '-l Singapore' as script argument
+		Given source directory as script argument
+		And content of test1.yml file piped in STDIN
+		When I run vhs-generate-posts script
+		Then the _posts directory will contain 2011-10-12 post template titled Varnish hit stats - Singapore that will include
+		"""
+		0.366667
+		"""
+		And the _posts directory will contain 2011-10-12 post template titled Varnish response time stats - Singapore that will include
+		"""
+		0.760594
+		"""
 		
 	Scenario: vhs-generate-post when no data is available (empty data set)
 		And _posts directory is empty
