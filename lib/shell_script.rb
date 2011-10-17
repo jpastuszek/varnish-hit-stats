@@ -66,8 +66,11 @@ class ShellScript
 		end
 	end
 
-	def initialize(argv = ARGV, &block)
+	def initialize(argv = ARGV, stdin = STDIN, stderr = STDERR, &block)
 		@argv = argv
+		@stdin = stdin
+		@stderr = stderr
+
 		#TODO: optoins should be in own class?
 		@optoins_long = {}
 		@optoins_short = {}
@@ -94,7 +97,7 @@ class ShellScript
 		@options_required << o unless o.optional?
 	end
 
-	def parse!
+	def parse
 		parsed = Parsed.new
 
 		# set defaults
@@ -138,12 +141,26 @@ class ShellScript
 		case @stdin_type
 			when :yaml
 				require 'yaml'
-				parsed.stdin = YAML.load(STDIN)
+				parsed.stdin = YAML.load(@stdin)
 			else
-				parsed.stdin = STDIN
+				parsed.stdin = @stdin
 		end
 
 		parsed
+	end
+
+	def parse!
+		begin
+			parse
+		rescue ParsingError => pe
+			usage!("Error: #{pe}")
+			exit 1
+		end
+	end
+
+	def usage!(msg = nil)
+		@stderr.puts msg if msg
+		@stderr.puts "Usage: #{File.basename $0}"
 	end
 end
 

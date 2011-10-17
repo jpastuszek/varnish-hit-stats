@@ -26,7 +26,7 @@ EOF
 	end
 
 	it "should return IO stdin by default" do
-		ps = ShellScript.new.parse!
+		ps = ShellScript.new.parse
 		ps.stdin.should be_a IO
 	end
 
@@ -37,7 +37,7 @@ EOF
 		end
 
 		stdin_write(@yaml) do
-			ps = ss.parse!
+			ps = ss.parse
 		end
 
 		ps.stdin.should == {:parser=>{:successes=>41, :failures=>0}}
@@ -47,7 +47,7 @@ EOF
 		it "should handle single argument" do
 			ps = ShellScript.new(['/tmp']) do
 				argument :log
-			end.parse!
+			end.parse
 			ps.log.should be_a String
 			ps.log.should == '/tmp'
 		end
@@ -55,7 +55,7 @@ EOF
 		it "non empty, non optional with class casting" do
 			ps = ShellScript.new(['/tmp']) do
 				argument :log, :cast => Pathname
-			end.parse!
+			end.parse
 			ps.log.should be_a Pathname
 			ps.log.to_s.should == '/tmp'
 		end
@@ -63,13 +63,13 @@ EOF
 		it "non empty, non optional with builtin class casting" do
 			ps = ShellScript.new(['123']) do
 				argument :number, :cast => Integer
-			end.parse!
+			end.parse
 			ps.number.should be_a Integer
 			ps.number.should == 123
 
 			ps = ShellScript.new(['123']) do
 				argument :number, :cast => Float
-			end.parse!
+			end.parse
 			ps.number.should be_a Float
 			ps.number.should == 123.0
 		end
@@ -78,7 +78,7 @@ EOF
 			ps = ShellScript.new(['/tmp', 'hello']) do
 				argument :log, :cast => Pathname
 				argument :test
-			end.parse!
+			end.parse
 			ps.log.should be_a Pathname
 			ps.log.to_s.should == '/tmp'
 			ps.test.should be_a String
@@ -89,7 +89,7 @@ EOF
 			lambda {
 				ps = ShellScript.new([]) do
 					argument :log
-				end.parse!
+				end.parse
 			}.should raise_error ShellScript::ParsingError
 		end
 
@@ -98,7 +98,7 @@ EOF
 			lambda {
 				ps = ShellScript.new(['abc']) do
 					argument :log, :cast => IP
-				end.parse!
+				end.parse
 			}.should raise_error ShellScript::ParsingError
 		end
 
@@ -107,7 +107,7 @@ EOF
 				ps = ShellScript.new(['hello']) do
 					argument :log, :cast => Pathname, :default => '/tmp'
 					argument :test
-				end.parse!
+				end.parse
 				ps.log.should be_a Pathname
 				ps.log.to_s.should == '/tmp'
 				ps.test.should be_a String
@@ -118,7 +118,7 @@ EOF
 				ps = ShellScript.new(['/tmp']) do
 					argument :log, :cast => Pathname
 					argument :test, :default => 'hello'
-				end.parse!
+				end.parse
 				ps.log.should be_a Pathname
 				ps.log.to_s.should == '/tmp'
 				ps.test.should be_a String
@@ -131,7 +131,7 @@ EOF
 					argument :magick, :default => 'word'
 					argument :test
 					argument :code, :cast => Integer, :default => '123'
-				end.parse!
+				end.parse
 				ps.log.to_s.should == '/tmp'
 				ps.magick.should == 'word'
 				ps.test.should == 'hello'
@@ -144,7 +144,7 @@ EOF
 		it "should handle long option names" do
 			ps = ShellScript.new(['--location', 'singapore']) do
 				option :location
-			end.parse!
+			end.parse
 			ps.location.should be_a String
 			ps.location.should == 'singapore'
 		end
@@ -152,7 +152,7 @@ EOF
 		it "should handle short option names" do
 			ps = ShellScript.new(['-l', 'singapore']) do
 				option :location, :short => :l
-			end.parse!
+			end.parse
 			ps.location.should be_a String
 			ps.location.should == 'singapore'
 		end
@@ -161,7 +161,7 @@ EOF
 			ps = ShellScript.new([]) do
 				option :location, :default => 'singapore'
 				option :size, :cast => Integer, :default => 23
-			end.parse!
+			end.parse
 			ps.location.should be_a String
 			ps.location.should == 'singapore'
 			ps.size.should be_a Integer
@@ -171,7 +171,7 @@ EOF
 		it "should support casting" do
 			ps = ShellScript.new(['--size', '24']) do
 				option :size, :cast => Integer
-			end.parse!
+			end.parse
 			ps.size.should be_a Integer
 			ps.size.should == 24
 		end
@@ -179,7 +179,7 @@ EOF
 		it "not given and not defined options should be nil" do
 			ps = ShellScript.new([]) do
 				option :size, :cast => Integer
-			end.parse!
+			end.parse
 			ps.size.should be_nil
 			ps.gold.should be_nil
 		end
@@ -192,7 +192,7 @@ EOF
 				option :speed, :short => :s, :cast => Integer
 				option :not_given
 				option :size
-			end.parse!
+			end.parse
 			ps.group.should == 'red'
 			ps.power_up.should == 'yes'
 			ps.speed.should == 24
@@ -207,7 +207,7 @@ EOF
 			end
 			
 			lambda {
-				ps.parse!
+				ps.parse
 			}.should raise_error ShellScript::ParsingError
 		end
 
@@ -217,7 +217,7 @@ EOF
 			end
 			
 			lambda {
-				ps.parse!
+				ps.parse
 			}.should raise_error ShellScript::ParsingError
 		end
 
@@ -230,7 +230,7 @@ EOF
 			end
 			
 			lambda {
-				ps.parse!
+				ps.parse
 			}.should raise_error ShellScript::ParsingError, "following options are required but were not specified: --size"
 		end
 	end
@@ -247,7 +247,7 @@ EOF
 				argument :magick, :default => 'word'
 				argument :test
 				argument :code, :cast => Integer, :default => '123'
-			end.parse!
+			end.parse
 
 			ps.group.should == 'red'
 			ps.power_up.should == 'yes'
