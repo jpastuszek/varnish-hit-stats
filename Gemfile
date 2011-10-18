@@ -1,6 +1,6 @@
 source "http://rubygems.org"
 
-gem "universal-access-log-parser", "~> 1.0.0"
+gem "universal-access-log-parser", "~> 1.0.1"
 gem "jekyll", "~> 0.11.0"
 gem "rdiscount", "~> 1.6.8"
 gem "compass", "~> 0.11.5"
