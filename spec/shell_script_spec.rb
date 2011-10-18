@@ -260,8 +260,8 @@ EOF
 			ps.code.should == 123
 	end
 
-	it "parse should set help variable if -h specified in the argument list" do
-			ps = ShellScript.new do
+	it "parse should set help variable if -h or --help specified in the argument list" do
+			ss = ShellScript.new do
 				option :location, :short => :l
 				option :group, :default => 'red'
 				option :power_up, :short => :p
@@ -272,9 +272,27 @@ EOF
 				argument :magick, :default => 'word'
 				argument :test
 				argument :code, :cast => Integer, :default => '123'
-			end.parse(['-h', '-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
+			end
+			
+			ps = ss.parse(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
+			ps.help.should be_nil
+
+			ps = ss.parse(['-h', '-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
 			ps.help.should be_a String
+
+			ps = ss.parse(['-l', 'singapore', '--power-up', '-h', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
+			ps.help.should be_a String
+
+			ps = ss.parse(['-l', 'singapore', '--power-up', '--help', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
+			ps.help.should be_a String
+
+			ps = ss.parse(['--help', '-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
+			ps.help.should be_a String
+
 			puts ps.help
+
+			ps = ss.parse(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
+			ps.help.should be_nil
 	end
 end
 
