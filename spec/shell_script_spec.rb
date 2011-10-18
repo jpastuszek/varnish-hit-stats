@@ -260,39 +260,48 @@ EOF
 			ps.code.should == 123
 	end
 
-	it "parse should set help variable if -h or --help specified in the argument list" do
-			ss = ShellScript.new do
-				option :location, :short => :l
-				option :group, :default => 'red'
-				option :power_up, :short => :p
-				option :speed, :short => :s, :cast => Integer
-				option :size
+	describe "usage and description" do
+		it "parse should set help variable if -h or --help specified in the argument list and not parse the input" do
+				ss = ShellScript.new do
+					option :location, :short => :l
+					option :group, :default => 'red'
+					option :power_up, :short => :p
+					option :speed, :short => :s, :cast => Integer
+					option :size
 
-				argument :log, :cast => Pathname
-				argument :magick, :default => 'word'
-				argument :test
-				argument :code, :cast => Integer, :default => '123'
-			end
-			
-			ps = ss.parse(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
-			ps.help.should be_nil
+					argument :log, :cast => Pathname
+					argument :magick, :default => 'word'
+					argument :test
+					argument :code, :cast => Integer, :default => '123'
+				end
+				
+				ps = ss.parse(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
+				ps.help.should be_nil
+				ps.location.should == 'singapore'
 
-			ps = ss.parse(['-h', '-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
-			ps.help.should be_a String
+				ps = ss.parse(['-h', '-l', 'singapore', '--power-up'])
+				ps.help.should be_a String
+				ps.location.should be_nil
 
-			ps = ss.parse(['-l', 'singapore', '--power-up', '-h', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
-			ps.help.should be_a String
+				ps = ss.parse(['-l', 'singapore', '--power-up', '-h', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
+				ps.help.should be_a String
+				ps.location.should be_nil
 
-			ps = ss.parse(['-l', 'singapore', '--power-up', '--help', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
-			ps.help.should be_a String
+				ps = ss.parse(['-l', 'singapore', '--power-up', '--help'])
+				ps.help.should be_a String
+				ps.location.should be_nil
 
-			ps = ss.parse(['--help', '-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
-			ps.help.should be_a String
+				ps = ss.parse(['--help', '-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
+				ps.help.should be_a String
+				ps.location.should be_nil
 
-			puts ps.help
+				puts ps.help
 
-			ps = ss.parse(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
-			ps.help.should be_nil
+				ps = ss.parse(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
+				ps.help.should be_nil
+				ps.location.should == 'singapore'
+		end
+
 	end
 end
 
