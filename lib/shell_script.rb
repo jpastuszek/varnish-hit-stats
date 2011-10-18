@@ -12,7 +12,40 @@ class ShellScript
 		end
 	end
 
-	class STDINType
+	module Options
+		module Cast
+			def cast(value)
+				begin
+					cast_class = @options[:cast]
+					if cast_class == nil
+						value
+					elsif cast_class == Integer
+						value.to_i
+					elsif cast_class == Float
+						value.to_f
+					elsif cast_class == YAML
+						YAML.load(value)
+					else
+						cast_class.new(value)
+					end
+				rescue => e
+					raise ParsingError, "failed to cast: #{@name} to type: #{@options[:cast].name}: #{e}"
+				end
+			end
+		end
+
+		module Description
+			def description?
+				@options.member? :description
+			end
+
+			def description
+				@options[:description]
+			end
+		end
+	end
+
+	class STDINHandling
 		def initialize(name, options = {})
 			@name = name
 			@options = {
@@ -20,32 +53,8 @@ class ShellScript
 			}.merge(options)
 		end
 
-		def cast(value)
-			begin
-				cast_class = @options[:cast]
-				if cast_class == nil
-					value
-				elsif cast_class == Integer
-					value.to_i
-				elsif cast_class == Float
-					value.to_f
-				elsif cast_class == YAML
-					YAML.load(value)
-				else
-					cast_class.new(value)
-				end
-			rescue => e
-				raise ParsingError, "failed to cast argument: #{@name} to type: #{@options[:cast].name}: #{e}"
-			end
-		end
-
-		def description?
-			@options.member? :description
-		end
-
-		def description
-			@options[:description]
-		end
+		include Options::Cast
+		include Options::Description
 
 		def to_s
 			(@name or @options[:cast] or 'data').to_s.tr('_', '-')
@@ -62,45 +71,11 @@ class ShellScript
 
 		attr_reader :name
 
-		def cast(value)
-			begin
-				cast_class = @options[:cast]
-				if cast_class == Integer
-					value.to_i
-				elsif cast_class == Float
-					value.to_f
-				else
-					cast_class.new(value)
-				end
-			rescue => e
-				raise ParsingError, "failed to cast argument: #{@name} to type: #{@options[:cast].name}: #{e}"
-			end
-		end
-
-		def optional?
-			@options.member? :default
-		end
+		include Options::Cast
+		include Options::Description
 
 		def default
 			@options[:default]
-		end
-		
-		def description?
-			@options.member? :description
-		end
-
-		def description
-			@options[:description]
-		end
-
-		def to_s
-			name.to_s.tr('_', '-')
-		end
-	end
-
-	class Option < Argument
-		def has_short?
-			@options.member? :short
 		end
 
 		def has_default?
@@ -108,15 +83,25 @@ class ShellScript
 		end
 
 		def optional?
+			has_default?
+		end
+		
+		def to_s
+			name.to_s.tr('_', '-')
+		end
+	end
+
+	class Option < Argument
+		def optional?
 			has_default? or not @options[:required]
+		end
+
+		def has_short?
+			@options.member? :short
 		end
 
 		def short
 			@options[:short]
-		end
-
-		def to_s
-			switch
 		end
 
 		def switch
@@ -125,6 +110,10 @@ class ShellScript
 
 		def switch_short
 			'-' + short.to_s
+		end
+
+		def to_s
+			switch
 		end
 	end
 
@@ -144,7 +133,7 @@ class ShellScript
 	end
 
 	def stdin(name = nil, options = {})
-		@stdin_type = STDINType.new(name, options)
+		@stdin_handling = STDINHandling.new(name, options)
 	end
 
 	def argument(name, options = {})
@@ -212,7 +201,7 @@ class ShellScript
 		end
 
 		# process stdin
-		parsed.stdin = @stdin_type.cast(stdin) if @stdin_type
+		parsed.stdin = @stdin_handling.cast(stdin) if @stdin_handling
 
 		parsed
 	end
@@ -236,14 +225,14 @@ class ShellScript
 		out.print "Usage: #{File.basename $0}"
 		out.print ' [options]' unless @optoins_long.empty?
 		out.print ' ' + @arguments.map{|a| a.to_s}.join(' ') unless @arguments.empty?
-		out.print " < #{@stdin_type}" if @stdin_type
+		out.print " < #{@stdin_handling}" if @stdin_handling
 
 		out.puts
 		out.puts @description if @description
 
-		if @stdin_type and @stdin_type.description?
+		if @stdin_handling and @stdin_handling.description?
 			out.puts "Input:"
-			out.puts "   #{@stdin_type} - #{@stdin_type.description}"
+			out.puts "   #{@stdin_handling} - #{@stdin_handling.description}"
 		end
 
 		unless @optoins_long.empty?

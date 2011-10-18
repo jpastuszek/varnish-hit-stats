@@ -108,7 +108,7 @@ EOF
 				ps = ShellScript.new do
 					argument :log, :cast => IP
 				end.parse(['abc'])
-			}.should raise_error ShellScript::ParsingError
+			}.should raise_error ShellScript::ParsingError, 'failed to cast: log to type: IP: invalid address'
 		end
 
 		describe "with defaults" do
@@ -245,7 +245,33 @@ EOF
 	end
 
 	it "should handle options and then arguments" do
-			ps = ShellScript.new do
+		ps = ShellScript.new do
+			option :location, :short => :l
+			option :group, :default => 'red'
+			option :power_up, :short => :p
+			option :speed, :short => :s, :cast => Integer
+			option :size
+
+			argument :log, :cast => Pathname
+			argument :magick, :default => 'word'
+			argument :test
+			argument :code, :cast => Integer, :default => '123'
+		end.parse(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
+
+		ps.group.should == 'red'
+		ps.power_up.should == 'yes'
+		ps.speed.should == 24
+		ps.size.should == 'XXXL'
+
+		ps.log.to_s.should == '/tmp'
+		ps.magick.should == 'word'
+		ps.test.should == 'hello'
+		ps.code.should == 123
+	end
+
+	describe "usage and description" do
+		it "parse should set help variable if -h or --help specified in the argument list and not parse the input" do
+			ss = ShellScript.new do
 				option :location, :short => :l
 				option :group, :default => 'red'
 				option :power_up, :short => :p
@@ -256,132 +282,105 @@ EOF
 				argument :magick, :default => 'word'
 				argument :test
 				argument :code, :cast => Integer, :default => '123'
-			end.parse(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
+			end
+			
+			ps = ss.parse(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
+			ps.help.should be_nil
+			ps.location.should == 'singapore'
 
-			ps.group.should == 'red'
-			ps.power_up.should == 'yes'
-			ps.speed.should == 24
-			ps.size.should == 'XXXL'
+			ps = ss.parse(['-h', '-l', 'singapore', '--power-up'])
+			ps.help.should be_a String
+			ps.location.should be_nil
 
-			ps.log.to_s.should == '/tmp'
-			ps.magick.should == 'word'
-			ps.test.should == 'hello'
-			ps.code.should == 123
-	end
+			ps = ss.parse(['-l', 'singapore', '--power-up', '-h', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
+			ps.help.should be_a String
+			ps.location.should be_nil
 
-	describe "usage and description" do
-		it "parse should set help variable if -h or --help specified in the argument list and not parse the input" do
-				ss = ShellScript.new do
-					option :location, :short => :l
-					option :group, :default => 'red'
-					option :power_up, :short => :p
-					option :speed, :short => :s, :cast => Integer
-					option :size
+			ps = ss.parse(['-l', 'singapore', '--power-up', '--help'])
+			ps.help.should be_a String
+			ps.location.should be_nil
 
-					argument :log, :cast => Pathname
-					argument :magick, :default => 'word'
-					argument :test
-					argument :code, :cast => Integer, :default => '123'
-				end
-				
-				ps = ss.parse(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
-				ps.help.should be_nil
-				ps.location.should == 'singapore'
+			ps = ss.parse(['--help', '-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
+			ps.help.should be_a String
+			ps.location.should be_nil
 
-				ps = ss.parse(['-h', '-l', 'singapore', '--power-up'])
-				ps.help.should be_a String
-				ps.location.should be_nil
-
-				ps = ss.parse(['-l', 'singapore', '--power-up', '-h', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
-				ps.help.should be_a String
-				ps.location.should be_nil
-
-				ps = ss.parse(['-l', 'singapore', '--power-up', '--help'])
-				ps.help.should be_a String
-				ps.location.should be_nil
-
-				ps = ss.parse(['--help', '-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
-				ps.help.should be_a String
-				ps.location.should be_nil
-
-				ps = ss.parse(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
-				ps.help.should be_nil
-				ps.location.should == 'singapore'
+			ps = ss.parse(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
+			ps.help.should be_nil
+			ps.location.should == 'singapore'
 		end
 
 		it "should allow describing options" do
-				ss = ShellScript.new do
-					option :location, :short => :l, :description => "place where server is located"
-					option :group, :default => 'red'
-				end
+			ss = ShellScript.new do
+				option :location, :short => :l, :description => "place where server is located"
+				option :group, :default => 'red'
+			end
 
-				ss.usage.should include("place where server is located")
+			ss.usage.should include("place where server is located")
 		end
 
 		it "should allow describing arguments" do
-				ss = ShellScript.new do
-					option :group, :default => 'red'
-					argument :log, :cast => Pathname, :description => "log file to process"
-				end
+			ss = ShellScript.new do
+				option :group, :default => 'red'
+				argument :log, :cast => Pathname, :description => "log file to process"
+			end
 
-				ss.usage.should include("log file to process")
+			ss.usage.should include("log file to process")
 		end
 
 		it "should allow describing whole script" do
-				ss = ShellScript.new do
-					description 'Log file processor'
-					option :group, :default => 'red'
-					argument :log, :cast => Pathname
-				end
+			ss = ShellScript.new do
+				description 'Log file processor'
+				option :group, :default => 'red'
+				argument :log, :cast => Pathname
+			end
 
-				ss.usage.should include("Log file processor")
+			ss.usage.should include("Log file processor")
 		end
 
 		it "should provide stdin usage information" do
-				ShellScript.new do
-					stdin
-				end.usage.should include(" < data")
+			ShellScript.new do
+				stdin
+			end.usage.should include(" < data")
 
-				ShellScript.new do
-					stdin :log_file
-				end.usage.should include(" < log-file")
+			ShellScript.new do
+				stdin :log_file
+			end.usage.should include(" < log-file")
 
-				u = ShellScript.new do
-					stdin :log_file, :description => 'log file to process'
-				end.usage
-				u.should include(" < log-file")
-				u.should include("log file to process")
+			u = ShellScript.new do
+				stdin :log_file, :description => 'log file to process'
+			end.usage
+			u.should include(" < log-file")
+			u.should include("log file to process")
 
-				u = ShellScript.new do
-					stdin :log_data, :cast => YAML, :description => 'log data to process'
-				end.usage
-				u.should include(" < log-data")
-				u.should include("log data to process")
-
+			u = ShellScript.new do
+				stdin :log_data, :cast => YAML, :description => 'log data to process'
+			end.usage
+			u.should include(" < log-data")
+			u.should include("log data to process")
 		end
 
 		it "should provide formated usage with optional message" do
-				ss = ShellScript.new do
-					description 'Log file processor'
-					stdin :log_data, :cast => YAML, :description => "YAML formatted log data"
-					option :location, :short => :l, :description => "place where server is located"
-					option :group, :default => 'red'
-					option :power_up, :short => :p
-					option :speed, :short => :s, :cast => Integer
-					option :the_number_of_the_beast, :short => :b, :cast => Integer, :default => 666, :description => "The number of the beast"
-					option :size
+			u = ShellScript.new do
+				description 'Log file processor'
+				stdin :log_data, :cast => YAML, :description => "YAML formatted log data"
+				option :location, :short => :l, :description => "place where server is located"
+				option :group, :default => 'red'
+				option :power_up, :short => :p
+				option :speed, :short => :s, :cast => Integer
+				option :the_number_of_the_beast, :short => :b, :cast => Integer, :default => 666, :description => "The number of the beast"
+				option :size
 
-					argument :log, :cast => Pathname, :description => "log file to process"
-					argument :magick, :default => 'word'
-					argument :string
-					argument :number, :cast => Integer
-					argument :code, :cast => Integer, :default => '123', :description => "secret code"
-					argument :illegal_prime, :cast => Integer, :description => "prime number that represents information that it is forbidden to possess or distribute"
-				end
+				argument :log, :cast => Pathname, :description => "log file to process"
+				argument :magick, :default => 'word'
+				argument :string
+				argument :number, :cast => Integer
+				argument :code, :cast => Integer, :default => '123', :description => "secret code"
+				argument :illegal_prime, :cast => Integer, :description => "prime number that represents information that it is forbidden to possess or distribute"
+			end.usage
 
-				puts ss.usage
+			puts u
 
-				ss.usage.should == <<EOS
+			u.should == <<EOS
 Usage: rspec [options] log magick string number code illegal-prime < log-data
 Log file processor
 Input:
