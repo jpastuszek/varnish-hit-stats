@@ -295,13 +295,42 @@ EOF
 				ps.help.should be_a String
 				ps.location.should be_nil
 
-				puts ps.help
-
 				ps = ss.parse(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
 				ps.help.should be_nil
 				ps.location.should == 'singapore'
+
+				puts ss.usage
 		end
 
+		it "should allow describing options" do
+				ss = ShellScript.new do
+					option :location, :short => :l, :description => "place where server is located"
+					option :group, :default => 'red'
+				end
+
+				ss.usage.should include("place where server is located")
+		end
+
+		it "should allow describing arguments" do
+				ss = ShellScript.new do
+					option :group, :default => 'red'
+					argument :log, :cast => Pathname, :description => "log file to process"
+				end
+
+				puts ss.usage
+				ss.usage.should include("log file to process")
+		end
+
+		it "should allow describing whole script" do
+				ss = ShellScript.new do
+					description 'Log file processor'
+					option :group, :default => 'red'
+					argument :log, :cast => Pathname
+				end
+
+				puts ss.usage
+				ss.usage.should include("Log file processor")
+		end
 	end
 end
 

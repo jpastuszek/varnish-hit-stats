@@ -43,6 +43,14 @@ class ShellScript
 		def default
 			@options[:default]
 		end
+		
+		def description?
+			@options.member? :description
+		end
+
+		def description
+			@options[:description]
+		end
 
 		def to_s
 			name.to_s.tr('_', '-')
@@ -87,6 +95,10 @@ class ShellScript
 		@options_required = []
 		@arguments = []
 		instance_eval(&block) if block_given?
+	end
+
+	def description(desc)
+		@description = desc
 	end
 
 	def stdin(stdin_type)
@@ -188,6 +200,7 @@ class ShellScript
 		out.print ' [options]' unless @optoins_long.empty?
 		out.print ' ' + @arguments.map{|a| a.to_s}.join(' ') unless @arguments.empty?
 		out.puts
+		out.puts @description if @description
 		out.puts
 		unless @optoins_long.empty?
 			out.puts "Options:"
@@ -196,7 +209,16 @@ class ShellScript
 				out.print o.switch
 				out.print " (#{o.switch_short})" if o.has_short?
 				out.print " [%s]" % o.default if o.has_default?
+				out.print " - #{o.description}" if o.description?
 				out.puts
+			end
+		end
+
+		described_arguments = @arguments.select{|a| a.description?}
+		unless described_arguments.empty?
+			out.puts "Arguments:"
+			described_arguments.each do |a|
+				out.print "   #{a.name} - #{a.description}"
 			end
 		end
 
