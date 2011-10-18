@@ -10,13 +10,14 @@ script = ShellScript.new do
 	option :site_dir, :cast => Pathname, :default => '/srv/http/stats'
 	option :location, :short => :l
 	argument :log_file, :cast => Pathname
-end.parse!
+end
+options = script.parse!
 
-jekyll_dir = script.jekyll_dir
-data_dir = script.data_dir
-site_dir = script.site_dir
+jekyll_dir = options.jekyll_dir
+data_dir = options.data_dir
+site_dir = options.site_dir
 
-raise "log file not found: #{script.log_file}" unless script.log_file.readable?
+script.usage! "log file not found: #{options.log_file}" unless options.log_file.readable?
 data_dir.mkpath unless data_dir.directory?
 site_dir.mkpath unless site_dir.directory?
 
@@ -27,7 +28,13 @@ end
 
 data_file = "#{data_dir}/#{Time.now.yesterday.strftime('%Y-%m-%d')}.yml" 
 
-system("cat '#{script.log_file.to_s}' | vhs-process > '#{data_file}'")
-system("cat '#{data_file}' | vhs-generate-posts '#{jekyll_dir}'")
-system("vhs-publish '#{jekyll_dir}' '#{site_dir}'")
+def run(cmd)
+	puts "# #{cmd}"
+	system(cmd)
+	raise "command failed: #{cmd}" unless $?.success?
+end
+
+run("cat '#{options.log_file.to_s}' | vhs-process > '#{data_file}'")
+run("cat '#{data_file}' | vhs-generate-posts #{options.location ? "-l #{options.location}" : ''} '#{jekyll_dir}'")
+run("vhs-publish '#{jekyll_dir}' '#{site_dir}'")
 
