@@ -41,14 +41,14 @@ end
 
 def script_output(file, *args)
 	cmd = "#{script(file)} #{args.join(' ')}"
-	out = `#{cmd} 2>&1`
+	out = `#{cmd}`
 	raise "failed to execute script: #{cmd} out: #{out}" unless $?.success?
 	out
 end
 
 def script_output_from_input(in_file, file, *args)
 	cmd = "cat #{in_file} | #{script(file)} #{args.join(' ')}"
-	out = `#{cmd} 2>&1`
+	out = `#{cmd}`
 	raise "failed to execute script: #{cmd} out: #{out}" unless $?.success?
 	out
 end

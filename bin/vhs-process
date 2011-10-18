@@ -9,6 +9,7 @@ require 'shell_script'
 $script = ShellScript.new do
 	description 'Generate statistics from Varnish ammended NCSA log file'
 	stdin :log_file, :description => 'Varnish ammended NCSA log file'
+	#switch :progress, :short => :p, :description => 'show progress'
 end
 $options = $script.parse!
 
@@ -22,13 +23,28 @@ last = nil
 hit_stats = HitStats.new
 response_time_stats = ResponseTimeStats.new
 
+$lines = 0
+def progress
+	$lines += 1
+	if $lines % 100 == 0
+		STDERR.print '.'
+		STDERR.print $lines if $lines % 1000 == 0
+		STDERR.flush
+	end
+end
+
 parser_stats = UniversalAccessLogParser.varnish.parse_io($options.stdin).each do |entry|
 	first_entry_time ||= entry.time
 	last = entry
 
 	hit_stats.process(entry)
 	response_time_stats.process(entry)
+
+	progress
 end
+
+STDERR.puts
+STDERR.puts "Processed lines: #{parser_stats.successes} (#{parser_stats.failures} bad)"
 
 last_entry_time = last.time if last
 
