@@ -11,6 +11,38 @@ class ShellScript
 		end
 	end
 
+	class STDINType
+		def initialize(type, name = nil, options = {})
+			@type = type
+			@name = name
+			@options = options
+		end
+
+		def cast(stdin)
+			case @type
+				when :yaml
+					require 'yaml'
+					YAML.load(stdin)
+				when :io
+					stdin
+				else 
+					raise ParsingError, "unknown stdin type: #{@type}"
+			end
+		end
+
+		def description?
+			@options.member? :description
+		end
+
+		def description
+			@options[:description]
+		end
+
+		def to_s
+			@name or @type.to_s
+		end
+	end
+
 	class Argument
 		def initialize(name, options = {})
 			@name = name
@@ -102,8 +134,8 @@ class ShellScript
 		@description = desc
 	end
 
-	def stdin(stdin_type)
-		@stdin_type = stdin_type
+	def stdin(stdin_type, name = nil, options = {})
+		@stdin_type = STDINType.new(stdin_type, name, options)
 	end
 
 	def argument(name, options = {})
@@ -171,15 +203,7 @@ class ShellScript
 		end
 
 		# process stdin
-		case @stdin_type
-			when :yaml
-				require 'yaml'
-				parsed.stdin = YAML.load(stdin)
-			when :io
-				parsed.stdin = stdin
-			else 
-				raise ParsingError, "unknown stdin type: #{@stdin_type}"
-		end if @stdin_type
+		parsed.stdin = @stdin_type.cast(stdin) if @stdin_type
 
 		parsed
 	end
@@ -203,7 +227,7 @@ class ShellScript
 		out.print "Usage: #{File.basename $0}"
 		out.print ' [options]' unless @optoins_long.empty?
 		out.print ' ' + @arguments.map{|a| a.to_s}.join(' ') unless @arguments.empty?
-		#out.print ' < '
+		out.print ' < ' if @stdin_type
 		out.puts
 		out.puts @description if @description
 		out.puts

@@ -5,11 +5,12 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'shell_script'
 
 script = ShellScript.new do
-	option :jekyll_dir, :cast => Pathname, :default => '/var/lib/vhs/jekyll'
-	option :data_dir, :cast => Pathname, :default => '/var/lib/vhs/data'
-	option :site_dir, :cast => Pathname, :default => '/srv/http/stats'
-	option :location, :short => :l
-	argument :log_file, :cast => Pathname
+	description "Process Varnish ammended NCSA log file and publish as blog post"
+	option :jekyll_dir, :cast => Pathname, :default => '/var/lib/vhs/jekyll', :description => 'directory where site source is located (no need to change)'
+	option :data_dir, :cast => Pathname, :default => '/var/lib/vhs/data', :description => 'directory where YAML data will be storred'
+	option :site_dir, :cast => Pathname, :default => '/srv/http/stats', :description => 'directory where website will be generated'
+	option :location, :short => :l, :description => 'location name (ex. Dublin, Singapore, Califorina)'
+	argument :log_file, :cast => Pathname, :description => 'Varnish ammended NCSA log file to process'
 end
 options = script.parse!
 
