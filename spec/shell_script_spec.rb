@@ -298,8 +298,6 @@ EOF
 				ps = ss.parse(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
 				ps.help.should be_nil
 				ps.location.should == 'singapore'
-
-				puts ss.usage
 		end
 
 		it "should allow describing options" do
@@ -317,7 +315,6 @@ EOF
 					argument :log, :cast => Pathname, :description => "log file to process"
 				end
 
-				puts ss.usage
 				ss.usage.should include("log file to process")
 		end
 
@@ -328,8 +325,44 @@ EOF
 					argument :log, :cast => Pathname
 				end
 
-				puts ss.usage
 				ss.usage.should include("Log file processor")
+		end
+
+		it "should provide formated usage with optional message" do
+				ss = ShellScript.new do
+					description 'Log file processor'
+					option :location, :short => :l, :description => "place where server is located"
+					option :location, :short => :l
+					option :group, :default => 'red'
+					option :power_up, :short => :p
+					option :speed, :short => :s, :cast => Integer
+					option :the_number_of_the_beast, :short => :b, :cast => Integer, :default => 666, :description => "The number of the beast"
+					option :size
+
+					argument :log, :cast => Pathname, :description => "log file to process"
+					argument :magick, :default => 'word'
+					argument :string
+					argument :number, :cast => Integer
+					argument :code, :cast => Integer, :default => '123', :description => "secret code"
+					argument :illegal_prime, :cast => Integer, :description => "prime number that represents information that it is forbidden to possess or distribute"
+				end
+
+				ss.usage.should == <<EOS
+Usage: rspec [options] log magick string number code illegal-prime
+Log file processor
+
+Options:
+   --the-number-of-the-beast (-b) [666] - The number of the beast
+   --group [red]
+   --location (-l)
+   --power-up (-p)
+   --size
+   --speed (-s)
+Arguments:
+   log - log file to process
+   code - secret code
+   illegal-prime - prime number that represents information that it is forbidden to possess or distribute
+EOS
 		end
 	end
 end

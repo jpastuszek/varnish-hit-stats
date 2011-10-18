@@ -218,7 +218,7 @@ class ShellScript
 		unless described_arguments.empty?
 			out.puts "Arguments:"
 			described_arguments.each do |a|
-				out.print "   #{a.name} - #{a.description}"
+				out.puts "   #{a} - #{a.description}"
 			end
 		end
 
