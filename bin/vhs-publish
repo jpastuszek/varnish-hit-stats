@@ -3,16 +3,18 @@ require 'pathname'
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'shell_script'
 
-script = ShellScript.new do
-	argument :source_dir, :cast => Pathname
-	argument :site_dir, :cast => Pathname
-end.parse!
+$script = ShellScript.new do
+	description 'Publish Jekyll website'
+	argument :jekyll_dir, :cast => Pathname, :default => '/var/lib/vhs/jekyll', :description => 'directory where site source is located'
+	argument :site_dir, :cast => Pathname, :default => '/srv/http/stats', :description => 'directory where website will be generated'
+end
+$options = $script.parse!
 
-source_dir = script.source_dir
-site_dir = script.site_dir
+jekyll_dir = $options.jekyll_dir
+site_dir = $options.site_dir
 
-raise "source directory does not exist: #{source_dir}" unless source_dir.exist?
-raise "site directory does not exist: #{site_dir}" unless site_dir.exist?
+$script.usage! "Jekyll directory does not exist: #{jekyll_dir}" unless jekyll_dir.exist?
+$script.usage! "site directory does not exist: #{site_dir}" unless site_dir.exist?
 
 def run(cmd)
 	c = []
@@ -24,8 +26,8 @@ def run(cmd)
 	raise "failed to execute command: #{cmd}" unless $?.success?
 end
 
-puts "Building site from #{source_dir} to #{site_dir}:"
-Dir.chdir(source_dir)
+puts "Building site from #{jekyll_dir} to #{site_dir}:"
+Dir.chdir(jekyll_dir)
 
 run 'compass compile -c config.rb --force'
 run "jekyll '#{site_dir}'"

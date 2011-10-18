@@ -6,9 +6,11 @@ require 'response_time_stats'
 require 'yaml'
 require 'shell_script'
 
-script = ShellScript.new do
-	stdin :io
-end.parse!
+$script = ShellScript.new do
+	description 'Generate statistics from Varnish ammended NCSA log file'
+	stdin :log_file, :description => 'Varnish ammended NCSA log file'
+end
+$options = $script.parse!
 
 stats = {}
 
@@ -20,7 +22,7 @@ last = nil
 hit_stats = HitStats.new
 response_time_stats = ResponseTimeStats.new
 
-parser_stats = UniversalAccessLogParser.varnish.parse_io(script.stdin).each do |entry|
+parser_stats = UniversalAccessLogParser.varnish.parse_io($options.stdin).each do |entry|
 	first_entry_time ||= entry.time
 	last = entry
 

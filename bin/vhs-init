@@ -13,14 +13,16 @@ def run(cmd)
 	raise "failed to execute command: #{cmd}" unless $?.success?
 end
 
-script = ShellScript.new do
+$script = ShellScript.new do
+	option :source_jekyll_dir, :cast => Pathname, :default => (Pathname.new(__FILE__).dirname + '..' + 'site').realpath, :description => 'directory where original site source is located'
 	argument :source_dir, :cast => Pathname
-end.parse!
+end
+$options = $script.parse!
 
-source_dir = script.source_dir
-jekyll_dir = Pathname.new(__FILE__).dirname + '..' + 'site'
+source_dir = $options.source_dir
+jekyll_dir = $options.source_jekyll_dir
 
-raise "jekyll directory does not exist: #{jekyll_dir}" unless jekyll_dir.exist?
+$script.usage! "jekyll directory does not exist: #{jekyll_dir}" unless jekyll_dir.exist?
 
 puts "Updating source directory"
 source_dir.mkpath unless source_dir.exist?
