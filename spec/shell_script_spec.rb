@@ -31,17 +31,17 @@ EOF
 			ps.stdin.should be_nil
 		end
 
-		it "should return IO if stdin type is :io" do
+		it "should return IO if stdin is defined" do
 			ps = ShellScript.new do
-				stdin :io
+				stdin
 			end.parse
 			ps.stdin.should be_a IO
 		end
 
-		it "should return YAML document if stdin type is :yaml" do
+		it "should return YAML document if stdin is casted to YAML" do
 			ps = nil
 			ss = ShellScript.new do
-				stdin :yaml
+				stdin :log_file, :cast => YAML
 			end
 
 			stdin_write(@yaml) do
@@ -49,16 +49,6 @@ EOF
 			end
 
 			ps.stdin.should == {:parser=>{:successes=>41, :failures=>0}}
-		end
-
-		it "should fail if stdin type is unknonw" do
-			ps = ShellScript.new do
-				stdin :bogous
-			end
-			
-			lambda {
-				ps.parse
-			}.should raise_error ShellScript::ParsingError, 'unknown stdin type: bogous'
 		end
 	end
 
@@ -347,9 +337,33 @@ EOF
 				ss.usage.should include("Log file processor")
 		end
 
+		it "should provide stdin usage information" do
+				ShellScript.new do
+					stdin
+				end.usage.should include(" < data")
+
+				ShellScript.new do
+					stdin :log_file
+				end.usage.should include(" < log-file")
+
+				u = ShellScript.new do
+					stdin :log_file, :description => 'log file to process'
+				end.usage
+				u.should include(" < log-file")
+				u.should include("log file to process")
+
+				u = ShellScript.new do
+					stdin :log_data, :cast => YAML, :description => 'log data to process'
+				end.usage
+				u.should include(" < log-data")
+				u.should include("log data to process")
+
+		end
+
 		it "should provide formated usage with optional message" do
 				ss = ShellScript.new do
 					description 'Log file processor'
+					stdin :log_data, :cast => YAML, :description => "YAML formatted log data"
 					option :location, :short => :l, :description => "place where server is located"
 					option :group, :default => 'red'
 					option :power_up, :short => :p
@@ -365,10 +379,13 @@ EOF
 					argument :illegal_prime, :cast => Integer, :description => "prime number that represents information that it is forbidden to possess or distribute"
 				end
 
-				ss.usage.should == <<EOS
-Usage: rspec [options] log magick string number code illegal-prime
-Log file processor
+				puts ss.usage
 
+				ss.usage.should == <<EOS
+Usage: rspec [options] log magick string number code illegal-prime < log-data
+Log file processor
+Input:
+   log-data - YAML formatted log data
 Options:
    --location (-l) - place where server is located
    --group [red]
@@ -381,7 +398,6 @@ Arguments:
    code - secret code
    illegal-prime - prime number that represents information that it is forbidden to possess or distribute
 EOS
-				puts ss.usage
 		end
 	end
 end

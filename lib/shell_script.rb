@@ -1,5 +1,6 @@
 require 'ostruct'
 require 'stringio'
+require 'yaml'
 
 class ShellScript
 	class ParsingError < ArgumentError
@@ -12,21 +13,29 @@ class ShellScript
 	end
 
 	class STDINType
-		def initialize(type, name = nil, options = {})
-			@type = type
+		def initialize(name, options = {})
 			@name = name
-			@options = options
+			@options = {
+				:cast => nil
+			}.merge(options)
 		end
 
-		def cast(stdin)
-			case @type
-				when :yaml
-					require 'yaml'
-					YAML.load(stdin)
-				when :io
-					stdin
-				else 
-					raise ParsingError, "unknown stdin type: #{@type}"
+		def cast(value)
+			begin
+				cast_class = @options[:cast]
+				if cast_class == nil
+					value
+				elsif cast_class == Integer
+					value.to_i
+				elsif cast_class == Float
+					value.to_f
+				elsif cast_class == YAML
+					YAML.load(value)
+				else
+					cast_class.new(value)
+				end
+			rescue => e
+				raise ParsingError, "failed to cast argument: #{@name} to type: #{@options[:cast].name}: #{e}"
 			end
 		end
 
@@ -39,7 +48,7 @@ class ShellScript
 		end
 
 		def to_s
-			@name or @type.to_s
+			(@name or @options[:cast] or 'data').to_s.tr('_', '-')
 		end
 	end
 
@@ -134,8 +143,8 @@ class ShellScript
 		@description = desc
 	end
 
-	def stdin(stdin_type, name = nil, options = {})
-		@stdin_type = STDINType.new(stdin_type, name, options)
+	def stdin(name = nil, options = {})
+		@stdin_type = STDINType.new(name, options)
 	end
 
 	def argument(name, options = {})
@@ -227,10 +236,16 @@ class ShellScript
 		out.print "Usage: #{File.basename $0}"
 		out.print ' [options]' unless @optoins_long.empty?
 		out.print ' ' + @arguments.map{|a| a.to_s}.join(' ') unless @arguments.empty?
-		out.print ' < ' if @stdin_type
+		out.print " < #{@stdin_type}" if @stdin_type
+
 		out.puts
 		out.puts @description if @description
-		out.puts
+
+		if @stdin_type and @stdin_type.description?
+			out.puts "Input:"
+			out.puts "   #{@stdin_type} - #{@stdin_type.description}"
+		end
+
 		unless @optoins_long.empty?
 			out.puts "Options:"
 			@options.each do |o|
