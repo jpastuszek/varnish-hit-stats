@@ -259,5 +259,22 @@ EOF
 			ps.test.should == 'hello'
 			ps.code.should == 123
 	end
+
+	it "parse should set help variable if -h specified in the argument list" do
+			ps = ShellScript.new(['-h', '-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello']) do
+				option :location, :short => :l
+				option :group, :default => 'red'
+				option :power_up, :short => :p
+				option :speed, :short => :s, :cast => Integer
+				option :size
+
+				argument :log, :cast => Pathname
+				argument :magick, :default => 'word'
+				argument :test
+				argument :code, :cast => Integer, :default => '123'
+			end.parse
+			ps.help.should be_a String
+			puts ps.help
+	end
 end
 

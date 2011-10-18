@@ -1,4 +1,5 @@
 require 'ostruct'
+require 'stringio'
 
 class ShellScript
 	class ParsingError < ArgumentError
@@ -112,6 +113,12 @@ class ShellScript
 	def parse
 		parsed = Parsed.new
 
+		# check help
+		if @argv.include? '-h' or @argv.include? '--help' 
+			parsed.help = usage
+			return parsed
+		end
+
 		# set defaults
 		@options_default.each do |o|
 			parsed.set(o, o.default)
@@ -171,23 +178,31 @@ class ShellScript
 		end
 	end
 
-	def usage!(msg = nil)
-		@stderr.puts msg if msg
-		@stderr.print "Usage: #{File.basename $0}"
-		@stderr.print ' [options]' unless @optoins_long.empty?
-		@stderr.print ' ' + @arguments.map{|a| a.to_s}.join(' ') unless @arguments.empty?
-		@stderr.puts
-		@stderr.puts
+	def usage(msg = nil)
+		out = StringIO.new
+		out.puts msg if msg
+		out.print "Usage: #{File.basename $0}"
+		out.print ' [options]' unless @optoins_long.empty?
+		out.print ' ' + @arguments.map{|a| a.to_s}.join(' ') unless @arguments.empty?
+		out.puts
+		out.puts
 		unless @optoins_long.empty?
-			@stderr.puts "Options:"
+			out.puts "Options:"
 			@optoins_long.values.each do |o|
-				@stderr.print '   '
-				@stderr.print o.switch
-				@stderr.print " (#{o.switch_short})" if o.has_short?
-				@stderr.print " [%s]" % o.default if o.has_default?
-				@stderr.puts
+				out.print '   '
+				out.print o.switch
+				out.print " (#{o.switch_short})" if o.has_short?
+				out.print " [%s]" % o.default if o.has_default?
+				out.puts
 			end
 		end
+
+		out.rewind
+		out.read
+	end
+
+	def usage!(msg = nil)
+		@stderr.write usage(msg)
 	end
 end
 
