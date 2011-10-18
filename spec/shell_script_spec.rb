@@ -45,40 +45,40 @@ EOF
 
 	describe 'argument handling' do
 		it "should handle single argument" do
-			ps = ShellScript.new(['/tmp']) do
+			ps = ShellScript.new do
 				argument :log
-			end.parse
+			end.parse(['/tmp'])
 			ps.log.should be_a String
 			ps.log.should == '/tmp'
 		end
 
 		it "non empty, non optional with class casting" do
-			ps = ShellScript.new(['/tmp']) do
+			ps = ShellScript.new do
 				argument :log, :cast => Pathname
-			end.parse
+			end.parse(['/tmp'])
 			ps.log.should be_a Pathname
 			ps.log.to_s.should == '/tmp'
 		end
 
 		it "non empty, non optional with builtin class casting" do
-			ps = ShellScript.new(['123']) do
+			ps = ShellScript.new do
 				argument :number, :cast => Integer
-			end.parse
+			end.parse(['123'])
 			ps.number.should be_a Integer
 			ps.number.should == 123
 
-			ps = ShellScript.new(['123']) do
+			ps = ShellScript.new do
 				argument :number, :cast => Float
-			end.parse
+			end.parse(['123'])
 			ps.number.should be_a Float
 			ps.number.should == 123.0
 		end
 
 		it "should handle multiple arguments" do
-			ps = ShellScript.new(['/tmp', 'hello']) do
+			ps = ShellScript.new do
 				argument :log, :cast => Pathname
 				argument :test
-			end.parse
+			end.parse(['/tmp', 'hello'])
 			ps.log.should be_a Pathname
 			ps.log.to_s.should == '/tmp'
 			ps.test.should be_a String
@@ -87,27 +87,27 @@ EOF
 
 		it "should raise error if not given" do
 			lambda {
-				ps = ShellScript.new([]) do
+				ps = ShellScript.new do
 					argument :log
-				end.parse
+				end.parse([])
 			}.should raise_error ShellScript::ParsingError
 		end
 
 		it "should raise error if casting fail" do
 			require 'ip'
 			lambda {
-				ps = ShellScript.new(['abc']) do
+				ps = ShellScript.new do
 					argument :log, :cast => IP
-				end.parse
+				end.parse(['abc'])
 			}.should raise_error ShellScript::ParsingError
 		end
 
 		describe "with defaults" do
 			it "should use default first argument" do
-				ps = ShellScript.new(['hello']) do
+				ps = ShellScript.new do
 					argument :log, :cast => Pathname, :default => '/tmp'
 					argument :test
-				end.parse
+				end.parse(['hello'])
 				ps.log.should be_a Pathname
 				ps.log.to_s.should == '/tmp'
 				ps.test.should be_a String
@@ -115,10 +115,10 @@ EOF
 			end
 
 			it "should use default second argument" do
-				ps = ShellScript.new(['/tmp']) do
+				ps = ShellScript.new do
 					argument :log, :cast => Pathname
 					argument :test, :default => 'hello'
-				end.parse
+				end.parse(['/tmp'])
 				ps.log.should be_a Pathname
 				ps.log.to_s.should == '/tmp'
 				ps.test.should be_a String
@@ -126,12 +126,12 @@ EOF
 			end
 
 			it "should use default second argument" do
-				ps = ShellScript.new(['/tmp', 'hello']) do
+				ps = ShellScript.new do
 					argument :log, :cast => Pathname
 					argument :magick, :default => 'word'
 					argument :test
 					argument :code, :cast => Integer, :default => '123'
-				end.parse
+				end.parse(['/tmp', 'hello'])
 				ps.log.to_s.should == '/tmp'
 				ps.magick.should == 'word'
 				ps.test.should == 'hello'
@@ -142,26 +142,26 @@ EOF
 
 	describe 'option handling' do
 		it "should handle long option names" do
-			ps = ShellScript.new(['--location', 'singapore']) do
+			ps = ShellScript.new do
 				option :location
-			end.parse
+			end.parse(['--location', 'singapore'])
 			ps.location.should be_a String
 			ps.location.should == 'singapore'
 		end
 
 		it "should handle short option names" do
-			ps = ShellScript.new(['-l', 'singapore']) do
+			ps = ShellScript.new do
 				option :location, :short => :l
-			end.parse
+			end.parse(['-l', 'singapore'])
 			ps.location.should be_a String
 			ps.location.should == 'singapore'
 		end
 
 		it "should handle default values" do
-			ps = ShellScript.new([]) do
+			ps = ShellScript.new do
 				option :location, :default => 'singapore'
 				option :size, :cast => Integer, :default => 23
-			end.parse
+			end.parse([])
 			ps.location.should be_a String
 			ps.location.should == 'singapore'
 			ps.size.should be_a Integer
@@ -169,30 +169,30 @@ EOF
 		end
 
 		it "should support casting" do
-			ps = ShellScript.new(['--size', '24']) do
+			ps = ShellScript.new do
 				option :size, :cast => Integer
-			end.parse
+			end.parse(['--size', '24'])
 			ps.size.should be_a Integer
 			ps.size.should == 24
 		end
 
 		it "not given and not defined options should be nil" do
-			ps = ShellScript.new([]) do
+			ps = ShellScript.new do
 				option :size, :cast => Integer
-			end.parse
+			end.parse([])
 			ps.size.should be_nil
 			ps.gold.should be_nil
 		end
 
 		it "should handle multiple long and short intermixed options" do
-			ps = ShellScript.new(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL']) do
+			ps = ShellScript.new do
 				option :location, :short => :l
 				option :group, :default => 'red'
 				option :power_up, :short => :p
 				option :speed, :short => :s, :cast => Integer
 				option :not_given
 				option :size
-			end.parse
+			end.parse(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL'])
 			ps.group.should == 'red'
 			ps.power_up.should == 'yes'
 			ps.speed.should == 24
@@ -202,27 +202,27 @@ EOF
 		end
 
 		it "should raise error on unrecognized switch" do
-			ps = ShellScript.new(['--xxx', 'singapore']) do
+			ps = ShellScript.new do
 				option :location
 			end
 			
 			lambda {
-				ps.parse
+				ps.parse(['--xxx', 'singapore'])
 			}.should raise_error ShellScript::ParsingError
 		end
 
 		it "should raise error on missing option argument" do
-			ps = ShellScript.new(['--location']) do
+			ps = ShellScript.new do
 				option :location
 			end
 			
 			lambda {
-				ps.parse
+				ps.parse(['--location'])
 			}.should raise_error ShellScript::ParsingError
 		end
 
 		it "should raise error on missing required option" do
-			ps = ShellScript.new(['--location', 'singapore']) do
+			ps = ShellScript.new do
 				option :location
 				option :size, :required => true
 				option :group, :default => 'red'
@@ -230,13 +230,13 @@ EOF
 			end
 			
 			lambda {
-				ps.parse
+				ps.parse(['--location', 'singapore'])
 			}.should raise_error ShellScript::ParsingError, "following options are required but were not specified: --size"
 		end
 	end
 
 	it "should handle options and then arguments" do
-			ps = ShellScript.new(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello']) do
+			ps = ShellScript.new do
 				option :location, :short => :l
 				option :group, :default => 'red'
 				option :power_up, :short => :p
@@ -247,7 +247,7 @@ EOF
 				argument :magick, :default => 'word'
 				argument :test
 				argument :code, :cast => Integer, :default => '123'
-			end.parse
+			end.parse(['-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
 
 			ps.group.should == 'red'
 			ps.power_up.should == 'yes'
@@ -261,7 +261,7 @@ EOF
 	end
 
 	it "parse should set help variable if -h specified in the argument list" do
-			ps = ShellScript.new(['-h', '-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello']) do
+			ps = ShellScript.new do
 				option :location, :short => :l
 				option :group, :default => 'red'
 				option :power_up, :short => :p
@@ -272,7 +272,7 @@ EOF
 				argument :magick, :default => 'word'
 				argument :test
 				argument :code, :cast => Integer, :default => '123'
-			end.parse
+			end.parse(['-h', '-l', 'singapore', '--power-up', 'yes', '-s', '24', '--size', 'XXXL', '/tmp', 'hello'])
 			ps.help.should be_a String
 			puts ps.help
 	end

@@ -79,11 +79,7 @@ class ShellScript
 		end
 	end
 
-	def initialize(argv = ARGV, stdin = STDIN, stderr = STDERR, &block)
-		@argv = argv
-		@stdin = stdin
-		@stderr = stderr
-
+	def initialize(&block)
 		#TODO: optoins should be in own class?
 		@optoins_long = {}
 		@optoins_short = {}
@@ -110,11 +106,13 @@ class ShellScript
 		@options_required << o unless o.optional?
 	end
 
-	def parse
+	def parse(_argv = ARGV, stdin = STDIN, stderr = STDERR)
 		parsed = Parsed.new
 
+		argv = _argv.dup
+
 		# check help
-		if @argv.include? '-h' or @argv.include? '--help' 
+		if argv.include? '-h' or argv.include? '--help' 
 			parsed.help = usage
 			return parsed
 		end
@@ -125,8 +123,9 @@ class ShellScript
 		end
 
 		# process switches
-		while @argv.first =~ /^-/
-			switch = @argv.shift
+		options_required = @options_required.dup
+		while argv.first =~ /^-/
+			switch = argv.shift
 			option = if switch =~ /^--/
 				@optoins_long[switch.sub(/^--/, '').tr('-', '_').to_sym]
 			else
@@ -134,24 +133,24 @@ class ShellScript
 			end
 
 			if option
-				value = @argv.shift or raise ParsingError, "missing option argument: #{option}"
+				value = argv.shift or raise ParsingError, "missing option argument: #{option}"
 				parsed.set(option, value)
-				@options_required.delete(option)
+				options_required.delete(option)
 			else
 				raise ParsingError, "unknonw switch: #{switch}"
 			end
 		end
 
 		# check required
-		raise ParsingError, "following options are required but were not specified: #{@options_required.map{|o| o.switch}.join(', ')}" unless @options_required.empty?
+		raise ParsingError, "following options are required but were not specified: #{options_required.map{|o| o.switch}.join(', ')}" unless options_required.empty?
 
 		# process arguments
 		arguments = @arguments.dup
 		while argument = arguments.shift
-			value = if @argv.length < arguments.length + 1 and argument.optional?
+			value = if argv.length < arguments.length + 1 and argument.optional?
 				argument.default # not enough arguments, try to skip optional if possible
 			else
-				@argv.shift or raise ParsingError, "missing argument: #{argument}"
+				argv.shift or raise ParsingError, "missing argument: #{argument}"
 			end
 
 			parsed.set(argument, value)
@@ -161,17 +160,17 @@ class ShellScript
 		case @stdin_type
 			when :yaml
 				require 'yaml'
-				parsed.stdin = YAML.load(@stdin)
+				parsed.stdin = YAML.load(stdin)
 			else
-				parsed.stdin = @stdin
+				parsed.stdin = stdin
 		end
 
 		parsed
 	end
 
-	def parse!
+	def parse!(argv = ARGV, stdin = STDIN, stderr = STDERR)
 		begin
-			parse
+			parse(argv, stdin, stderr)
 		rescue ParsingError => pe
 			usage!("Error: #{pe}")
 			exit 1
