@@ -378,7 +378,7 @@ EOF
 				argument :illegal_prime, :cast => Integer, :description => "prime number that represents information that it is forbidden to possess or distribute"
 			end.usage
 
-			puts u
+			#puts u
 
 			u.should == <<EOS
 Usage: rspec [options] log magick string number code illegal-prime < log-data
