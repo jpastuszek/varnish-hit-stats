@@ -168,12 +168,16 @@ class ShellScript
 		parsed
 	end
 
-	def parse!(argv = ARGV, stdin = STDIN, stderr = STDERR)
+	def parse!(argv = ARGV, stdin = STDIN, stderr = STDERR, stdout = STDOUT)
 		begin
-			parse(argv, stdin, stderr)
+			pp = parse(argv, stdin, stderr)
+			if pp.help
+				stdout.write pp.help
+				exit 0
+			end
+			pp
 		rescue ParsingError => pe
-			usage!("Error: #{pe}")
-			exit 1
+			usage!(pe, stderr)
 		end
 	end
 
@@ -200,8 +204,10 @@ class ShellScript
 		out.read
 	end
 
-	def usage!(msg = nil)
-		@stderr.write usage(msg)
+	def usage!(msg = nil, io = STDERR)
+		msg = "Error: #{msg}" if msg
+		io.write usage(msg)
+		exit 42
 	end
 end
 
