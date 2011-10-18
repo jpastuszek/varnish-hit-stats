@@ -175,9 +175,11 @@ class ShellScript
 			when :yaml
 				require 'yaml'
 				parsed.stdin = YAML.load(stdin)
-			else
+			when :io
 				parsed.stdin = stdin
-		end
+			else 
+				raise ParsingError, "unknown stdin type: #{@stdin_type}"
+		end if @stdin_type
 
 		parsed
 	end
@@ -201,6 +203,7 @@ class ShellScript
 		out.print "Usage: #{File.basename $0}"
 		out.print ' [options]' unless @optoins_long.empty?
 		out.print ' ' + @arguments.map{|a| a.to_s}.join(' ') unless @arguments.empty?
+		#out.print ' < '
 		out.puts
 		out.puts @description if @description
 		out.puts

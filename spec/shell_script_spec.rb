@@ -16,31 +16,50 @@ def stdin_write(data)
 end
 
 describe ShellScript do
-	before :all do
-		@yaml = <<EOF
+	describe 'STDIN handling' do
+		before :all do
+			@yaml = <<EOF
 --- 
 :parser: 
   :successes: 41
   :failures: 0
 EOF
-	end
-
-	it "should return IO stdin by default" do
-		ps = ShellScript.new.parse
-		ps.stdin.should be_a IO
-	end
-
-	it "should return YAML document for stdin if stdin type is :yaml" do
-		ps = nil
-		ss = ShellScript.new do
-			stdin :yaml
 		end
 
-		stdin_write(@yaml) do
-			ps = ss.parse
+		it "should be nil if not specified" do
+			ps = ShellScript.new.parse
+			ps.stdin.should be_nil
 		end
 
-		ps.stdin.should == {:parser=>{:successes=>41, :failures=>0}}
+		it "should return IO if stdin type is :io" do
+			ps = ShellScript.new do
+				stdin :io
+			end.parse
+			ps.stdin.should be_a IO
+		end
+
+		it "should return YAML document if stdin type is :yaml" do
+			ps = nil
+			ss = ShellScript.new do
+				stdin :yaml
+			end
+
+			stdin_write(@yaml) do
+				ps = ss.parse
+			end
+
+			ps.stdin.should == {:parser=>{:successes=>41, :failures=>0}}
+		end
+
+		it "should fail if stdin type is unknonw" do
+			ps = ShellScript.new do
+				stdin :bogous
+			end
+			
+			lambda {
+				ps.parse
+			}.should raise_error ShellScript::ParsingError, 'unknown stdin type: bogous'
+		end
 	end
 
 	describe 'argument handling' do
@@ -362,6 +381,7 @@ Arguments:
    code - secret code
    illegal-prime - prime number that represents information that it is forbidden to possess or distribute
 EOS
+				puts ss.usage
 		end
 	end
 end
