@@ -48,9 +48,7 @@ class ShellScript
 	class STDINHandling
 		def initialize(name, options = {})
 			@name = name
-			@options = {
-				:cast => nil
-			}.merge(options)
+			@options = options
 		end
 
 		include Options::Cast

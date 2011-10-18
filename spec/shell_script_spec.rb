@@ -41,7 +41,7 @@ EOF
 		it "should return YAML document if stdin is casted to YAML" do
 			ps = nil
 			ss = ShellScript.new do
-				stdin :log_file, :cast => YAML
+				stdin :log_data, :cast => YAML, :description => 'log statistic data in YAML format'
 			end
 
 			stdin_write(@yaml) do
