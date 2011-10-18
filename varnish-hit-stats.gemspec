@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "varnish-hit-stats"
-  s.version = "0.4.0"
+  s.version = "1.0.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jakub Pastuszek"]
-  s.date = "2011-10-12"
+  s.date = "2011-10-18"
   s.description = "Parsers and stat tools to analize Varnish ncsa logs"
   s.email = "jpastuszek@gmail.com"
   s.executables = ["vhs-generate-posts", "vhs-cron", "vhs-process", "vhs-init", "vhs-publish"]
@@ -40,6 +40,8 @@ Gem::Specification.new do |s|
     "features/test_files/hit_stats1.csv",
     "features/test_files/test1.log",
     "features/test_files/test1.yml",
+    "features/test_files/test_empty.log",
+    "features/test_files/test_empty.yml",
     "features/test_files/test_source/.gitignore",
     "features/test_files/test_source/README.md",
     "features/test_files/test_source/Rakefile",
@@ -64,6 +66,7 @@ Gem::Specification.new do |s|
     "lib/hit_stats.rb",
     "lib/parser.rb",
     "lib/response_time_stats.rb",
+    "lib/shell_script.rb",
     "lib/stat_counter.rb",
     "site/.gitignore",
     "site/README.md",
@@ -84,6 +87,7 @@ Gem::Specification.new do |s|
     "site/stylesheets/screen.css",
     "spec/hit_stats_spec.rb",
     "spec/response_time_stats_spec.rb",
+    "spec/shell_script_spec.rb",
     "spec/spec_helper.rb",
     "spec/stat_counter_spec.rb",
     "varnish-hit-stats.gemspec"
@@ -98,7 +102,7 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<universal-access-log-parser>, ["~> 1.0.0"])
+      s.add_runtime_dependency(%q<universal-access-log-parser>, ["~> 1.0.1"])
       s.add_runtime_dependency(%q<jekyll>, ["~> 0.11.0"])
       s.add_runtime_dependency(%q<rdiscount>, ["~> 1.6.8"])
       s.add_runtime_dependency(%q<compass>, ["~> 0.11.5"])
@@ -113,7 +117,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rcov>, [">= 0"])
       s.add_development_dependency(%q<rake>, ["~> 0.9.2"])
     else
-      s.add_dependency(%q<universal-access-log-parser>, ["~> 1.0.0"])
+      s.add_dependency(%q<universal-access-log-parser>, ["~> 1.0.1"])
       s.add_dependency(%q<jekyll>, ["~> 0.11.0"])
       s.add_dependency(%q<rdiscount>, ["~> 1.6.8"])
       s.add_dependency(%q<compass>, ["~> 0.11.5"])
@@ -129,7 +133,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<rake>, ["~> 0.9.2"])
     end
   else
-    s.add_dependency(%q<universal-access-log-parser>, ["~> 1.0.0"])
+    s.add_dependency(%q<universal-access-log-parser>, ["~> 1.0.1"])
     s.add_dependency(%q<jekyll>, ["~> 0.11.0"])
     s.add_dependency(%q<rdiscount>, ["~> 1.6.8"])
     s.add_dependency(%q<compass>, ["~> 0.11.5"])
