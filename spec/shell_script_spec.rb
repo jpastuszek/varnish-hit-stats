@@ -332,7 +332,6 @@ EOF
 				ss = ShellScript.new do
 					description 'Log file processor'
 					option :location, :short => :l, :description => "place where server is located"
-					option :location, :short => :l
 					option :group, :default => 'red'
 					option :power_up, :short => :p
 					option :speed, :short => :s, :cast => Integer
@@ -352,12 +351,12 @@ Usage: rspec [options] log magick string number code illegal-prime
 Log file processor
 
 Options:
-   --the-number-of-the-beast (-b) [666] - The number of the beast
+   --location (-l) - place where server is located
    --group [red]
-   --location (-l)
    --power-up (-p)
-   --size
    --speed (-s)
+   --the-number-of-the-beast (-b) [666] - The number of the beast
+   --size
 Arguments:
    log - log file to process
    code - secret code

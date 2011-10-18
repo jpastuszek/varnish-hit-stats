@@ -89,6 +89,7 @@ class ShellScript
 
 	def initialize(&block)
 		#TODO: optoins should be in own class?
+		@options = []
 		@optoins_long = {}
 		@optoins_short = {}
 		@options_default = []
@@ -112,6 +113,7 @@ class ShellScript
 
 	def option(name, options = {})
 		o = Option.new(name, options)
+		@options << o
 		@optoins_long[name] = o
 		@optoins_short[o.short] = o if o.has_short?
 		@options_default << o if o.has_default?
@@ -204,7 +206,7 @@ class ShellScript
 		out.puts
 		unless @optoins_long.empty?
 			out.puts "Options:"
-			@optoins_long.values.each do |o|
+			@options.each do |o|
 				out.print '   '
 				out.print o.switch
 				out.print " (#{o.switch_short})" if o.has_short?
