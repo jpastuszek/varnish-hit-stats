@@ -59,7 +59,7 @@ GEM
     sass (3.1.10)
     syntax (1.0.0)
     term-ansicolor (1.0.6)
-    universal-access-log-parser (1.0.0)
+    universal-access-log-parser (1.0.1)
       ruby-ip
 
 PLATFORMS
@@ -79,4 +79,4 @@ DEPENDENCIES
   rcov
   rdiscount (~> 1.6.8)
   rspec (~> 2.6.0)
-  universal-access-log-parser (~> 1.0.0)
+  universal-access-log-parser (~> 1.0.1)
