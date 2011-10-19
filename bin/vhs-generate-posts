@@ -64,7 +64,7 @@ if sets.member?(:hit) and sets.member?(:response_time)
 			column "Average Response Time [s]"
 			column "Total Requests"
 
-			(sets[:hit].keys | sets[:response_time].keys).each do |page_class|
+			(sets[:hit].keys | sets[:response_time].keys).sort.each do |page_class|
 				row page_class
 			end
 
