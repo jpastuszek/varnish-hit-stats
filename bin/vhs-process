@@ -33,6 +33,8 @@ def progress
 	end
 end
 
+start_time = Time.now.utc
+
 parser_stats = UniversalAccessLogParser.varnish.parse_io($options.stdin).each do |entry|
 	first_entry_time ||= entry.time
 	last = entry
@@ -43,12 +45,19 @@ parser_stats = UniversalAccessLogParser.varnish.parse_io($options.stdin).each do
 	progress
 end
 
+end_time = Time.now.utc
+duration = end_time.to_f - start_time.to_f
+speed = (parser_stats.successes + parser_stats.failures) / duration
+
 STDERR.puts
-STDERR.puts "Processed lines: #{parser_stats.successes} (#{parser_stats.failures} bad)"
+STDERR.puts "Processed lines: #{parser_stats.successes} (#{parser_stats.failures} bad), took: #{duration} seconds @ #{speed} lines/s"
 
 last_entry_time = last.time if last
 
-stats[:info] = {:first_entry_time => first_entry_time, :last_entry_time => last_entry_time}
+stats[:info] = {
+	:first_entry_time => first_entry_time, :last_entry_time => last_entry_time, 
+	:processing_start_time => start_time, :processing_end_time => end_time, :processing_duration => duration, :processing_speed => speed
+}
 stats[:parser] = {:successes => parser_stats.successes, :failures => parser_stats.failures}
 
 if parser_stats.successes > 0
