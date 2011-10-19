@@ -17,13 +17,9 @@ Feature: Generating Jkyll posts from YAML data
 		Given source directory as script argument
 		And content of test1.yml file piped in STDIN
 		When I run vhs-generate-posts script
-		Then the _posts directory will contain 2011-10-12 post template titled Varnish hit stats that will include
+		Then the _posts directory will contain 2011-10-12 post template titled Varnish Request Statistics that will include
 		"""
-		0.366667
-		"""
-		And the _posts directory will contain 2011-10-12 post template titled Varnish response time stats that will include
-		"""
-		0.760594
+		0.366
 		"""
 
 	Scenario: Generating Hit statistics post with vhs-generate-posts and location
@@ -32,13 +28,9 @@ Feature: Generating Jkyll posts from YAML data
 		Given source directory as script argument
 		And content of test1.yml file piped in STDIN
 		When I run vhs-generate-posts script
-		Then the _posts directory will contain 2011-10-12 post template titled Varnish hit stats - Singapore that will include
+		Then the _posts directory will contain 2011-10-12 post template titled Varnish Request Statistics - Singapore that will include
 		"""
-		0.366667
-		"""
-		And the _posts directory will contain 2011-10-12 post template titled Varnish response time stats - Singapore that will include
-		"""
-		0.760594
+		0.366
 		"""
 		
 	Scenario: vhs-generate-post when no data is available (empty data set)
@@ -46,6 +38,5 @@ Feature: Generating Jkyll posts from YAML data
 		Given source directory as script argument
 		And content of test_empty.yml file piped in STDIN
 		When I run vhs-generate-posts script
-		Then the _posts directory will not contain 2011-10-12 post template titled Varnish hit stats
-		And the _posts directory will not contain 2011-10-12 post template titled Varnish response time stats
+		Then the _posts directory will not contain 2011-10-12 post template titled Varnish Request Statistics
 		

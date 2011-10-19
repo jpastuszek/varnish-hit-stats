@@ -4,6 +4,7 @@ require 'pathname'
 require 'active_support/core_ext'
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'shell_script'
+require 'table'
 
 $script = ShellScript.new do
 	description 'Generate blog posts in given Jekyll directory from input statistics'
@@ -46,32 +47,64 @@ def write_post(date, title, tags)
 	end
 end
 
-sets.each_pair do |set, data|
-	case set
-	when :hit
-		write_post(date, 'Varnish hit stats', %w{varnish hit stats}) do |io|
-			total = data.delete('total')
+if sets.member?(:hit) and sets.member?(:response_time)
+	write_post(date, 'Varnish Request Statistics', %w{varnish hit response time statistics}) do |io|
 
-			io.puts  "|_. Page Class |_. Pass |_. Hit |_. Miss |_. Total |_. Hit/Total |"
-			data.keys.sort.each do |page_class|
-				stats = data[page_class]
-				io.puts "| %s | %i | %i | %i | %i | %f |" % [page_class, stats[:pass], stats[:hit], stats[:miss], stats[:total], stats[:hit_to_total_ratio]]
-			end
-			io.puts "| *total* | *%i* | *%i* | *%i* | *%i* | *%f* |" % [total[:pass], total[:hit], total[:miss], total[:total], total[:hit].to_f / total[:total]]
-		end
-	when :response_time
-		write_post(date, 'Varnish response time stats', %w{varnish response time stats}) do |io|
-			total = data.delete('total')
+		hit_total = sets[:hit].delete('total')
+		rtime_total = sets[:response_time].delete('total')
 
-			io.puts  "|_. Page Class |_. Total Requests |_. Minimum Response Time [s]  |_. Maximum Response Time [s] |_. Average Response Time [s] |"
-			data.keys.sort.each do |page_class|
-				stats = data[page_class]
-				io.puts "| %s | %i | %f | %f | %f |" % [page_class, stats[:total_requests], stats[:min_time], stats[:max_time], stats[:average_time]]
+		t = Table.new do
+			column "Page Class"
+			column "Pass"
+			column "Hit"
+			column "Miss"
+			column "Hit/Total"
+			column "Total Requests"
+			column "Minimum Response Time [s]"
+			column "Maximum Response Time [s]"
+			column "Average Response Time [s]"
+			column "Total Requests"
+
+			(sets[:hit].keys | sets[:response_time].keys).each do |page_class|
+				row page_class
 			end
-			io.puts "| *total* | *%i* | *%f* | *%f* | *%f* |" % [total[:total_requests], total[:min_time], total[:max_time], total[:average_time]]
+
+			row "Total"
 		end
+
+		sets[:hit].each_pair do |page_class, data|
+			t[page_class, "Pass"] = data[:pass]
+			t[page_class, "Hit"] = data[:hit]
+			t[page_class, "Miss"] = data[:miss]
+			t[page_class, "Hit/Total"] = data[:hit_to_total_ratio]
+			t[page_class, "Total Requests"] = data[:total]
+		end
+
+		sets[:response_time].each_pair do |page_class, data|
+			t[page_class, "Minimum Response Time [s]"] = data[:min_time]
+			t[page_class, "Maximum Response Time [s]"] = data[:max_time]
+			t[page_class, "Average Response Time [s]"] = data[:average_time]
+			t[page_class, "Total Requests"] = data[:total_requests]
+		end
+
+			
+		if hit_total
+			t["Total", "Pass"] = hit_total[:pass]
+			t["Total", "Hit"] = hit_total[:hit]
+			t["Total", "Miss"] = hit_total[:miss]
+			t["Total", "Hit/Total"] = (hit_total[:hit].to_f / hit_total[:total])
+			t["Total", "Total Requests"] = hit_total[:total]
+		end
+
+		if rtime_total
+			t["Total", "Minimum Response Time [s]"] = rtime_total[:min_time]
+			t["Total", "Maximum Response Time [s]"] = rtime_total[:max_time]
+			t["Total", "Average Response Time [s]"] = rtime_total[:average_time]
+			t["Total", "Total Requests"] = rtime_total[:total_requests]
+		end
+
+		#puts t.to_textile
+		io.write t.to_textile
 	end
 end
-
-
 
