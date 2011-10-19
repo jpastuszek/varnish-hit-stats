@@ -19,7 +19,7 @@ Feature: Generating Jkyll posts from YAML data
 		When I run vhs-generate-posts script
 		Then the _posts directory will contain 2011-10-12 post template titled Varnish Request Statistics that will include
 		"""
-		0.366
+		0.760594
 		"""
 
 	Scenario: Generating Hit statistics post with vhs-generate-posts and location
@@ -30,7 +30,7 @@ Feature: Generating Jkyll posts from YAML data
 		When I run vhs-generate-posts script
 		Then the _posts directory will contain 2011-10-12 post template titled Varnish Request Statistics - Singapore that will include
 		"""
-		0.366
+		0.760594
 		"""
 		
 	Scenario: vhs-generate-post when no data is available (empty data set)

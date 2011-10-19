@@ -28,24 +28,16 @@ class HitStats
 			pc[:hit_to_total_ratio] = s.hit_to_total_ratio
 		end
 
-		total = h['total'] = Hash.new(0)
+		total = Hash.new(0)
 		h.each_pair do |page_class, s|
 			s.each_pair do |k, v|
 				total[k] += v
 			end
 		end
 
+		h['total'] = total
 		total[:hit_to_total_ratio] = total[:hit].to_f / total[:total]
 		h
-	end
-
-	def to_csv
-		out = ""
-		out += "class, pass, hit, miss, total, hit/total\n"
-		each_page_class_stat do |page_class, s|
-			out += "%s, %i, %i, %i, %i, %f\n" % [page_class, s.pass, s.hit, s.miss, s.total, s.hit_to_total_ratio]
-		end
-		out
 	end
 end
 
