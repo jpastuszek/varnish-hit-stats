@@ -1,3 +1,5 @@
+require 'stringio'
+
 class Table
 	def initialize(&block)
 		@columns = []
@@ -8,7 +10,7 @@ class Table
 
 		instance_eval &block
 
-		@table = [@columns]
+		@table = []
 		@rows.each do |row|
 			r = Array.new(@columns.length)
 			r[0] = row
@@ -16,8 +18,7 @@ class Table
 		end
 
 		@columns.each_with_index{|n, i| @column_index[n] = i}
-		@rows.each_with_index{|n, i| @row_index[n] = i + 1}
-
+		@rows.each_with_index{|n, i| @row_index[n] = i}
 	end
 
 	def column(name)
@@ -28,12 +29,43 @@ class Table
 		@rows << name
 	end
 
-	def []=(column, row, value)
+	def []=(row, column, value)
+		raise ArgumentError, "no row of name: #{row}" unless @row_index.member? row
+		raise ArgumentError, "no column of name: #{column}" unless @column_index.member? column
+
 		@table[@row_index[row]][@column_index[column]] = value
 	end
 
-	def [](column, row)
+	def [](row, column)
+		raise ArgumentError, "no row of name: #{row}" unless @row_index.member? row
+		raise ArgumentError, "no column of name: #{column}" unless @column_index.member? column
+
 		@table[@row_index[row]][@column_index[column]]
+	end
+
+	def to_textile(nil_representation = '-')
+		o = StringIO.new		
+
+		o.print '|_. '
+		o.print @columns.join(' |_. ')
+		o.puts ' |'
+
+		@table.each do |row|
+			row.map! do |value|
+				if value != nil
+					value
+				else
+					nil_representation
+				end	
+			end
+
+			o.print '| '
+			o.print row.join(' | ')
+			o.puts ' |'
+		end
+
+		o.rewind
+		o.read
 	end
 end
 

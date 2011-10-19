@@ -13,13 +13,30 @@ describe Table do
 			row "welcome"
 		end
 
-		t["Letters", "zabbix"] = "zabbix".length
-		t["Plural", "welcome"] = false
+		t["zabbix", "Letters"] = "zabbix".length
+		t["welcome", "Plural"] = false
 
-		t["Letters", "zabbix"].should == "zabbix".length
-		t["Plural", "welcome"].should == false
-		t["Words", "welcome"].should == "welcome"
-		t["Letters", "welcome"].should be_nil
+		t["zabbix", "Letters"].should == "zabbix".length
+		t["welcome", "Plural"].should == false
+		t["welcome", "Words"].should == "welcome"
+		t["welcome", "Letters"].should be_nil
+	end
+
+	it "should render to textile format" do
+		t = Table.new do
+			column "Words"
+			column "Letters"
+			column "Plural"
+			row "stanford"
+			row "zabbix"
+			row "galileo"
+			row "welcome"
+		end
+
+		t["zabbix", "Letters"] = "zabbix".length
+		t["welcome", "Plural"] = false
+
+		puts t.to_textile
 	end
 end
 
