@@ -59,7 +59,6 @@ if sets.member?(:hit) and sets.member?(:response_time)
 			column "Hit"
 			column "Miss"
 			column "Hit/Total"
-			column "Total Requests"
 			column "Minimum Response Time [s]"
 			column "Maximum Response Time [s]"
 			column "Average Response Time [s]"
