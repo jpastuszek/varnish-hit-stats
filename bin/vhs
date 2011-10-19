@@ -26,7 +26,7 @@ unless jekyll_dir.directory?
 	system("vhs-init #{jekyll_dir}")
 end
 
-data_file = "#{data_dir}/#{Time.now.yesterday.strftime('%Y-%m-%d')}.yml" 
+data_file = "#{data_dir}/#{Time.now.yesterday.strftime('%Y-%m-%d')}#{$options.location ? "-#{$options.location}" : ''}.yml" 
 
 def run(cmd)
 	puts "# #{cmd}"
