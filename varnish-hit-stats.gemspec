@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "varnish-hit-stats"
-  s.version = "1.1.0"
+  s.version = "1.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jakub Pastuszek"]
@@ -68,6 +68,7 @@ Gem::Specification.new do |s|
     "lib/response_time_stats.rb",
     "lib/shell_script.rb",
     "lib/stat_counter.rb",
+    "lib/table.rb",
     "site/.gitignore",
     "site/README.md",
     "site/Rakefile",
@@ -90,6 +91,7 @@ Gem::Specification.new do |s|
     "spec/shell_script_spec.rb",
     "spec/spec_helper.rb",
     "spec/stat_counter_spec.rb",
+    "spec/table_spec.rb",
     "varnish-hit-stats.gemspec"
   ]
   s.homepage = "http://github.com/jpastuszek/varnish-hit-stats"
