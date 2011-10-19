@@ -23,10 +23,10 @@ class ResponseTimeStats
 		@stats.each_pair do |pc, h|
 			t[:total_time] += h[:total_time]
 			t[:total_requests] += h[:total_requests]
-			t[:average_time] = h[:total_time] / h[:total_requests]
 			t[:min_time] = h[:min_time] if t[:min_time] > h[:min_time]
 			t[:max_time] = h[:max_time] if t[:max_time] < h[:max_time]
 		end
+		t[:average_time] = t[:total_time] / t[:total_requests]
 
 		@stats['total'] = t
 		@stats

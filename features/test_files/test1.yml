@@ -43,12 +43,12 @@
     :total: 4
     :hit_to_total_ratio: 0.5
 :info: 
-  :processing_speed: 77.2751008816472
+  :processing_speed: 77.2883331632958
   :first_entry_time: 2011-10-12 13:02:06 Z
   :last_entry_time: 2011-10-12 13:09:20 Z
-  :processing_start_time: 2011-10-19 20:38:24.260785 Z
-  :processing_end_time: 2011-10-19 20:38:24.791357 Z
-  :processing_duration: 0.530571937561035
+  :processing_start_time: 2011-10-19 20:45:54.202638 Z
+  :processing_end_time: 2011-10-19 20:45:54.733119 Z
+  :processing_duration: 0.530481100082397
 :response_time: 
   Response-Status: 
     :total_time: 0.099631548
@@ -67,7 +67,7 @@
     :total_requests: 41
     :max_time: 2.225226641
     :min_time: 6.2466e-05
-    :average_time: 0.7605940105
+    :average_time: 0.251896282487805
   Host-Redirect: 
     :total_time: 0.004624605
     :total_requests: 3
