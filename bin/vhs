@@ -5,12 +5,12 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'shell_script'
 
 $script = ShellScript.new do
+	stdin :log_file, :description => 'Varnish ammended NCSA log file to process'
 	description "Process Varnish ammended NCSA log file and publish as blog post"
 	option :jekyll_dir, :cast => Pathname, :default => '/var/lib/vhs/jekyll', :description => 'directory where site source is located'
 	option :data_dir, :cast => Pathname, :default => '/var/lib/vhs/data', :description => 'directory where YAML data will be storred'
 	option :site_dir, :cast => Pathname, :default => '/srv/http/stats', :description => 'directory where website will be generated'
 	option :location, :short => :l, :description => 'location name (ex. Dublin, Singapore, Califorina)'
-	argument :log_file, :cast => Pathname, :description => 'Varnish ammended NCSA log file to process'
 end
 $options = $script.parse!
 
@@ -18,7 +18,6 @@ jekyll_dir = $options.jekyll_dir
 data_dir = $options.data_dir
 site_dir = $options.site_dir
 
-$script.usage! "log file not found: #{$options.log_file}" unless $options.log_file.readable?
 data_dir.mkpath unless data_dir.directory?
 site_dir.mkpath unless site_dir.directory?
 
@@ -35,7 +34,18 @@ def run(cmd)
 	raise "command failed: #{cmd}" unless $?.success?
 end
 
-run("cat '#{$options.log_file.to_s}' | vhs-process > '#{data_file}'")
+def write_stdin(cmd)
+	puts "#> #{cmd}"
+	IO.popen(cmd, "w") do |io|
+		loop do
+			io.write $options.stdin.readpartial(1024 * 128)
+		end rescue EOFError
+	end
+
+	raise "command failed: #{cmd}" unless $?.success?
+end
+
+write_stdin("vhs-process > '#{data_file}'")
 run("cat '#{data_file}' | vhs-generate-posts #{$options.location ? "-l #{$options.location}" : ''} '#{jekyll_dir}'")
 run("vhs-publish '#{jekyll_dir}' '#{site_dir}'")
 
