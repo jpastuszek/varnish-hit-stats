@@ -5,14 +5,14 @@
 
 Gem::Specification.new do |s|
   s.name = "varnish-hit-stats"
-  s.version = "1.0.0"
+  s.version = "1.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jakub Pastuszek"]
-  s.date = "2011-10-18"
+  s.date = "2011-10-19"
   s.description = "Parsers and stat tools to analize Varnish ncsa logs"
   s.email = "jpastuszek@gmail.com"
-  s.executables = ["vhs-generate-posts", "vhs-cron", "vhs-process", "vhs-init", "vhs-publish"]
+  s.executables = ["vhs", "vhs-generate-posts", "vhs-process", "vhs-init", "vhs-publish"]
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.md"
@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
     "README.md",
     "Rakefile",
     "VERSION",
-    "bin/vhs-cron",
+    "bin/vhs",
     "bin/vhs-generate-posts",
     "bin/vhs-init",
     "bin/vhs-process",
