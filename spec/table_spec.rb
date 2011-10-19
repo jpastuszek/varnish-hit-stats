@@ -36,7 +36,13 @@ describe Table do
 		t["zabbix", "Letters"] = "zabbix".length
 		t["welcome", "Plural"] = false
 
-		puts t.to_textile
+		t.to_textile.should == <<EOS
+|_. Words |_. Letters |_. Plural |
+| stanford | - | - |
+| zabbix | 6 | - |
+| galileo | - | - |
+| welcome | - | false |
+EOS
 	end
 end
 
