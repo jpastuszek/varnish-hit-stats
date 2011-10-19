@@ -43,7 +43,12 @@ class Table
 		@table[@row_index[row]][@column_index[column]]
 	end
 
-	def to_textile(nil_representation = '-')
+	def to_textile(options = {})
+		options = {
+			:null => '-',
+			:float => '0.6'
+		}.merge(options)
+
 		o = StringIO.new		
 
 		o.print '|_. '
@@ -52,11 +57,9 @@ class Table
 
 		@table.each do |row|
 			row.map! do |value|
-				if value != nil
-					value
-				else
-					nil_representation
-				end	
+				next options[:null] if value == nil
+				next "%#{options[:float]}f" % value if value.is_a? Float
+				value
 			end
 
 			o.print '| '
