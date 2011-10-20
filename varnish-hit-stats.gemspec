@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "varnish-hit-stats"
-  s.version = "1.2.1"
+  s.version = "1.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jakub Pastuszek"]
-  s.date = "2011-10-19"
+  s.date = "2011-10-20"
   s.description = "Parsers and stat tools to analize Varnish ncsa logs"
   s.email = "jpastuszek@gmail.com"
   s.executables = ["vhs", "vhs-generate-posts", "vhs-process", "vhs-init", "vhs-publish"]
