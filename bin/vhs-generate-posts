@@ -1,7 +1,6 @@
 #!/usr/bin/ruby
 require 'yaml'
 require 'pathname'
-require 'active_support/core_ext'
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'shell_script'
 require 'table'
@@ -10,6 +9,7 @@ $script = ShellScript.new do
 	description 'Generate blog posts in given Jekyll directory from input statistics'
 	stdin :log_data, :cast => YAML, :description => 'statistic data in YAML format'
 	option :location, :short => :l, :description => 'location name (ex. Dublin, Singapore, Califorina)'
+	option :csv_dir, :short => :c, :cast => Pathname, :default => 'csv', :description => 'directory name where CSV file will be storred (relative to jekyll-dir)'
 	argument :jekyll_dir, :cast => Pathname, :default => '/var/lib/vhs/jekyll', :description => 'directory where site source is located'
 end
 $options = $script.parse!
@@ -20,24 +20,15 @@ $posts_dir = source_dir + '_posts'
 $script.usage! "source directory does not exist: #{source_dir}" unless source_dir.directory?
 $script.usage! "_posts directory does not exist: #{$posts_dir}" unless $posts_dir.directory?
 
-date = Time.now.yesterday.strftime('%Y-%m-%d')
+$csv_dir = source_dir + $options.csv_dir
+$csv_dir.mkpath unless $csv_dir.directory?
 
-sets = $options.stdin
-
-if sets[:info] and first = sets[:info][:first_entry_time] and last = sets[:info][:last_entry_time]
-	date = Time.at(first.to_i / 2 + last.to_i / 2).strftime('%Y-%m-%d')
-end
-
-def out_file(date, name)
-	$posts_dir + "#{date}-#{name}.textile"
+def file_name(date, title, ext)
+	"#{date.strftime('%Y-%m-%d')}-#{title.downcase.tr(' :', '-')}.#{ext}"
 end
 
 def write_post(date, title, tags)
-	# location stuff
-	title = title + ' - ' + $options.location if $options.location
-	tags << $options.location.downcase if $options.location
-
-	out_file(date, title.downcase.tr(' :', '-')).open('w') do |io|
+	($posts_dir + file_name(date, title, 'textile')).open('w') do |io|
 		io.puts '---'
 		io.puts 'layout: post'
 		io.puts "title: #{title}"
@@ -47,63 +38,88 @@ def write_post(date, title, tags)
 	end
 end
 
+def write_csv(date, title)
+	csv_file_name = file_name(date, title, 'csv')
+	($csv_dir + csv_file_name).open('w') do |io|
+		yield io, csv_file_name
+	end
+end
+
+sets = $options.stdin
+
+# find out day of the log file
+date = nil
+if sets[:info] and first = sets[:info][:first_entry_time] and last = sets[:info][:last_entry_time]
+	date = Time.at(first.to_i / 2 + last.to_i / 2)
+end
+
 if sets.member?(:hit) and sets.member?(:response_time)
-	write_post(date, 'Varnish Request Statistics', %w{varnish hit response time statistics}) do |io|
+	name = 'Varnish Request Statistics'
+	name += ' - ' + $options.location if $options.location
 
-		hit_total = sets[:hit].delete('total')
-		rtime_total = sets[:response_time].delete('total')
+	tags = %w{varnish hit response time statistics}
+	tags << $options.location.downcase if $options.location
 
-		t = Table.new do
-			column "Page Class"
-			column "Pass"
-			column "Hit"
-			column "Miss"
-			column "Hit/Total"
-			column "Minimum Response Time [s]"
-			column "Maximum Response Time [s]"
-			column "Average Response Time [s]"
-			column "Total Requests"
+	write_post(date, name, tags) do |post_io|
+		write_csv(date, name) do |csv_io, csv_file_name|
+			hit_total = sets[:hit].delete('total')
+			rtime_total = sets[:response_time].delete('total')
 
-			(sets[:hit].keys | sets[:response_time].keys).sort.each do |page_class|
-				row page_class
+			t = Table.new do
+				column "Page Class"
+				column "Pass"
+				column "Hit"
+				column "Miss"
+				column "Hit/Total"
+				column "Minimum Response Time [s]"
+				column "Maximum Response Time [s]"
+				column "Average Response Time [s]"
+				column "Total Requests"
+
+				(sets[:hit].keys | sets[:response_time].keys).sort.each do |page_class|
+					row page_class
+				end
+
+				row "Total"
 			end
 
-			row "Total"
-		end
+			sets[:hit].each_pair do |page_class, data|
+				t[page_class, "Pass"] = data[:pass]
+				t[page_class, "Hit"] = data[:hit]
+				t[page_class, "Miss"] = data[:miss]
+				t[page_class, "Hit/Total"] = data[:hit_to_total_ratio]
+				t[page_class, "Total Requests"] = data[:total]
+			end
 
-		sets[:hit].each_pair do |page_class, data|
-			t[page_class, "Pass"] = data[:pass]
-			t[page_class, "Hit"] = data[:hit]
-			t[page_class, "Miss"] = data[:miss]
-			t[page_class, "Hit/Total"] = data[:hit_to_total_ratio]
-			t[page_class, "Total Requests"] = data[:total]
-		end
+			sets[:response_time].each_pair do |page_class, data|
+				t[page_class, "Minimum Response Time [s]"] = data[:min_time]
+				t[page_class, "Maximum Response Time [s]"] = data[:max_time]
+				t[page_class, "Average Response Time [s]"] = data[:average_time]
+				t[page_class, "Total Requests"] = data[:total_requests]
+			end
 
-		sets[:response_time].each_pair do |page_class, data|
-			t[page_class, "Minimum Response Time [s]"] = data[:min_time]
-			t[page_class, "Maximum Response Time [s]"] = data[:max_time]
-			t[page_class, "Average Response Time [s]"] = data[:average_time]
-			t[page_class, "Total Requests"] = data[:total_requests]
-		end
+				
+			if hit_total
+				t["Total", "Pass"] = hit_total[:pass]
+				t["Total", "Hit"] = hit_total[:hit]
+				t["Total", "Miss"] = hit_total[:miss]
+				t["Total", "Hit/Total"] = (hit_total[:hit].to_f / hit_total[:total])
+				t["Total", "Total Requests"] = hit_total[:total]
+			end
 
-			
-		if hit_total
-			t["Total", "Pass"] = hit_total[:pass]
-			t["Total", "Hit"] = hit_total[:hit]
-			t["Total", "Miss"] = hit_total[:miss]
-			t["Total", "Hit/Total"] = (hit_total[:hit].to_f / hit_total[:total])
-			t["Total", "Total Requests"] = hit_total[:total]
-		end
+			if rtime_total
+				t["Total", "Minimum Response Time [s]"] = rtime_total[:min_time]
+				t["Total", "Maximum Response Time [s]"] = rtime_total[:max_time]
+				t["Total", "Average Response Time [s]"] = rtime_total[:average_time]
+				t["Total", "Total Requests"] = rtime_total[:total_requests]
+			end
 
-		if rtime_total
-			t["Total", "Minimum Response Time [s]"] = rtime_total[:min_time]
-			t["Total", "Maximum Response Time [s]"] = rtime_total[:max_time]
-			t["Total", "Average Response Time [s]"] = rtime_total[:average_time]
-			t["Total", "Total Requests"] = rtime_total[:total_requests]
-		end
+			post_io.write t.to_textile
+			post_io.puts
+			post_io.puts '"CSV":{{ site.baseurl }}/' + ($options.csv_dir + csv_file_name).to_s
 
-		#puts t.to_textile
-		io.write t.to_textile
+			csv_io.write t.to_csv
+		end
 	end
 end
 

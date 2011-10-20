@@ -6,15 +6,12 @@ Feature: Publishing Varnish hit statistics as Jekyll website
 		Background:
 				Given USE_BUNDLER_EXEC env var set to true
 				And gem bin directory in PATH
-				Given source directory
-				And source directory is empty
+				Given jekyll directory
 				Given site directory
-				And site directory is empty
-				Given test_source test directory
-				Given source directory contain what test_source directory contains
 
 				Scenario: Publishing Jekyll website from Jekyll source directory to site directory	
-						Given source directory as script argument
+						Given site directory is empty
+						Given jekyll directory as script argument
 						And site directory as script argument
 						When I run vhs-publish script
 						Then site directory will contain entries

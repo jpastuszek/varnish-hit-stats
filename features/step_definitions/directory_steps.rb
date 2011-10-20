@@ -1,8 +1,8 @@
 def dir_by_name(dir_name)
-	eval("@#{dir_name}_dir") or fail "undefined dir: #{dir_name}"
+	eval("@#{dir_name.tr(' ', '_')}_dir") or fail "undefined dir: #{dir_name}"
 end
 
-Given /([^ ]*) directory is empty/ do |dir_name|
+Given /(.*) directory is empty/ do |dir_name|
 	dir = dir_by_name(dir_name)
 	dir.mkpath unless dir.exist?
 	Pathname.glob(dir + '*').each do |entry|
@@ -11,12 +11,12 @@ Given /([^ ]*) directory is empty/ do |dir_name|
 	end
 end
 
-Given /([^ ]*) directory as script argument/ do |dir_name|
+Given /(.*) directory as script argument/ do |dir_name|
 	@script_args ||= []
 	@script_args << dir_by_name(dir_name).to_s
 end
 
-Given /there are files (.*) in ([^ ]*) directory/ do |files, dir_name|
+Given /there are files (.*) in (.*) directory/ do |files, dir_name|
 	dir = dir_by_name(dir_name)
 	@files = files.split(',').map{|f| dir + f}
 	@files.each do |file|
@@ -38,18 +38,18 @@ Then /those files will not exist/ do
 	end
 end
 
-Given /file (.*) in ([^ ]*) directory contain/ do |file, dir_name, content|
+Given /file (.*) in (.*) directory contain/ do |file, dir_name, content|
 	(dir_by_name(dir_name) + file).open('w') do |io|
 		io.write(content)
 	end
 end
 
-Given /there is no (.*) file in ([^ ]*) directory/ do |file, dir_name|
+Given /there is no (.*) file in (.*) directory/ do |file, dir_name|
 	f = (dir_by_name(dir_name) + file)
 	f.rm if f.exist?
 end
 
-Given /([^ ]*) directory contain what ([^ ]*) directory contains/ do |to_dir_name, from_dir_name|
+Given /(.*) directory contain what (.*) directory contains/ do |to_dir_name, from_dir_name|
 	from_dir_name = dir_by_name(from_dir_name)
 	to_dir_name = dir_by_name(to_dir_name)
 
@@ -59,19 +59,19 @@ Given /([^ ]*) directory contain what ([^ ]*) directory contains/ do |to_dir_nam
 	system("cp -r '#{Pathname.glob(from_dir_name + '*').join("' '")}' '#{to_dir_name}'")
 end
 
-Then /file (.*) in ([^ ]*) directory will contain/ do |file, dir_name, content|
+Then /file (.*) in (.*) directory will contain/ do |file, dir_name, content|
 	(dir_by_name(dir_name) + file).open do |io|
 		io.read.should == content
 	end
 end
 
-Then /file (.*) in ([^ ]*) directory will be identical to (.*) file in ([^ ]*) directory/ do |file1, dir_name1, file2, dir_name2|
+Then /file (.*) in (.*) directory will be identical to (.*) file in (.*) directory/ do |file1, dir_name1, file2, dir_name2|
 	content1 = (dir_by_name(dir_name1) + file1).read
 	content2 = (dir_by_name(dir_name2) + file2).read
 	content1.should == content2
 end
 
-Then /([^ ]*) directory will contain entries/ do |dir_name, files|
+Then /(.*) directory will contain entries/ do |dir_name, files|
 	dir = dir_by_name(dir_name)
 	files.raw.flatten.each do |file|
 		(dir + file).exist?.should == true

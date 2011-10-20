@@ -6,16 +6,16 @@ Given /^source directory$/ do
 	@source_dir = tmp_test_dir + 'source'
 end
 
+Given /^source _posts directory$/ do
+	@source__posts_dir = tmp_test_dir + 'source' + '_posts'
+end
+
+Given /^source csv directory$/ do
+	@source_csv_dir = tmp_test_dir + 'source' + 'csv'
+end
+
 Given /^site directory$/ do
 	@site_dir = tmp_test_dir + 'site'
-end
-
-Given /^source _posts directory$/ do
-	@_posts_dir = tmp_test_dir + 'source' + '_posts'
-end
-
-Given /^test_source test directory$/ do
-	@test_source_dir = test_files_dir + 'test_source'
 end
 
 Then /the ([^ ]*) directory will contain ([^ ]*) post titled (.*) that will include/ do |dir_name, time_spec, post_name, output|
@@ -28,7 +28,7 @@ Then /the ([^ ]*) directory will contain ([^ ]*) post titled (.*) that will incl
 	end
 end
 
-Then /the ([^ ]*) directory will contain ([^ ]*) post template titled (.*) that will include/ do |dir_name, time_spec, post_name, output|
+Then /the (.*) directory will contain ([^ ]*) post template titled (.*) that will include/ do |dir_name, time_spec, post_name, output|
 	time = Time.parse(time_spec)
 	file_name = post_name.downcase.tr(' :', '-')
 	uri = time.strftime('%Y-%m-%d') + '-' + file_name + '.textile'
@@ -40,7 +40,19 @@ Then /the ([^ ]*) directory will contain ([^ ]*) post template titled (.*) that 
 	end
 end
 
-Then /the ([^ ]*) directory will not contain ([^ ]*) post template titled (.*)/ do |dir_name, time_spec, post_name|
+Then /the (.*) directory will contain ([^ ]*) CSV titled (.*) that will include/ do |dir_name, time_spec, post_name, output|
+	time = Time.parse(time_spec)
+	file_name = post_name.downcase.tr(' :', '-')
+	uri = time.strftime('%Y-%m-%d') + '-' + file_name + '.csv'
+
+	puts @out
+
+	File.open(dir_by_name(dir_name) + uri) do |file|
+		file.read.should include(output)
+	end
+end
+
+Then /the (.*) directory will not contain ([^ ]*) post template titled (.*)/ do |dir_name, time_spec, post_name|
 	time = Time.parse(time_spec)
 	file_name = post_name.downcase.tr(' ', '-')
 	uri = time.strftime('%Y-%m-%d') + '-' + file_name + '.textile'

@@ -27,7 +27,9 @@ $script.usage! "jekyll directory does not exist: #{jekyll_dir}" unless jekyll_di
 puts "Updating source directory"
 source_dir.mkpath unless source_dir.exist?
 
-run "rsync -ah --progress --exclude '_posts/*' --exclude '.sass-cache' --exclude 'stylesheets/*' --exclude '_config.yml' --delete-after '#{jekyll_dir}/' '#{source_dir}'"
+exclude = ['_posts/*', '.sass-cache', 'stylesheets/*', '_config.yml', 'csv']
+
+run "rsync -ah --progress #{exclude.map{|e| "--exclude '#{e}' "}}--delete-after '#{jekyll_dir}/' '#{source_dir}'"
 config = source_dir + '_config.yml'
 unless config.exist?
 	puts "WARNING: Using default configuration"
